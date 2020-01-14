@@ -12,6 +12,9 @@
 .idea/**/contentModel.xml
 .idea/**/*.xml
 
+# virtual environment
+venv
+
 # Sensitive or high-churn files
 .idea/**/dataSources/
 .idea/**/dataSources.ids
