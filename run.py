@@ -46,22 +46,22 @@ description = "Script for generating SLURM job files for MRChem, ORCA, and Gauss
 parser = argparse.ArgumentParser(description=description, epilog=epilog,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
 
-parser.add_argument("-d", "--destination", metavar="", type=str, default=".", help="[str] Path to job directory")
-parser.add_argument("-i", "--input", type=str, required=True, metavar="", help="[str] Name of input file")
-parser.add_argument("-o", "--output", type=str, metavar="", help="[str] Name of output file")
-parser.add_argument("-c", "--code", choices=["mrchem", "orca", "gaussian"], metavar="", type=str, required=True, help="[str] Select code: {mrchem, orca, gaussian}")
+parser.add_argument("-d", "--destination", type=str, default=".", help="[str] Path to job directory")
+parser.add_argument("-i", "--input", type=str, required=True, help="[str] Name of input file")
+parser.add_argument("-o", "--output", type=str, help="[str] Name of output file")
+parser.add_argument("-c", "--code", choices=["mrchem", "orca", "gaussian"], type=str, required=True, help="[str] Select code: {mrchem, orca, gaussian}")
 parser.add_argument("-D", "--dev", action="store_true", help="Generate job suitable for development queue")
 parser.add_argument("-v", "--verbose", action="store_true", help="Run in verbose mode")
 parser.add_argument("-x", "--execute", action="store_true", help="Submit job to queue")
 
 # SLURM specific arguments
-parser.add_argument("-m", "--memory", type=str, default="5GB", metavar="", help="Total memory per node")
-parser.add_argument("-a", "--account", type=str, metavar="", help="Use this account on cluster")
-parser.add_argument("-n", "--nodes", type=str, metavar="", default="1", help="Specify number of nodes")
-parser.add_argument("-T", "--ntasks_per_node", type=str, default="10", metavar="", help="SLURM variable $NTASKS_PER_NODE")
-parser.add_argument("-p", "--cpus_per_task", type=str, default="0", metavar="", help="SLURM variable $CPUS_PER_TASK")
-parser.add_argument("-t", "--time", type=str, default="00-01:00:00", metavar="", help="Specify time [dd-hh:mm:ss]")
-parser.add_argument("-M", "--mail", type=str, default="NONE", metavar="", help="Specify the SLURM mail type")
+parser.add_argument("-m", "--memory", type=str, default="5GB", help="Total memory per node")
+parser.add_argument("-a", "--account", type=str, help="Use this account on cluster")
+parser.add_argument("-n", "--nodes", type=str, default="1", help="Specify number of nodes")
+parser.add_argument("-T", "--ntasks_per_node", type=str, default="10", help="SLURM variable $NTASKS_PER_NODE")
+parser.add_argument("-p", "--cpus_per_task", type=str, default="0", help="SLURM variable $CPUS_PER_TASK")
+parser.add_argument("-t", "--time", type=str, default="00-01:00:00", help="Specify time [dd-hh:mm:ss]")
+parser.add_argument("-M", "--mail", type=str, default="NONE", help="Specify the SLURM mail type")
 
 # Arguments for copying files to scratch
 parser.add_argument("--chess", action="store_true", help="Look for and copy .hess file (for ORCA jobs)")
@@ -71,34 +71,34 @@ parser.add_argument("--cbgw", action="store_true", help="Look for and copy .bgw 
 
 args = parser.parse_args()
 
-# Sort out some things
-if args.output is None: args.output = args.input
-if args.account is None: args.account = ACCOUNTS[cluster]
-
-# Define name of job file
-jobname = os.path.join(args.destination, args.input + JOB_EXTENSION)
-
-if args.code == "orca":
-
-    job = orca_job(destination=args.destination, inputfile=args.input, outputfile=args.output, is_dev=args.dev,
-                   cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
-                   slurm_account=ACCOUNTS[cluster],
-                   slurm_nodes=args.nodes,
-                   slurm_ntasks_per_node=args.ntasks_per_node,
-                   slurm_memory=args.memory,
-                   slurm_time=args.time,
-                   slurm_mail=args.mail,
-                   chess=args.chess,
-                   cxyz=args.cxyz,
-                   ccomp=args.ccomp,
-                   cbgw=args.cbgw)
-
-    with open(jobname, "w") as f:
-        for line in job:
-            f.write(line + "\n")
-
-    if args.verbose:
-        print(f"Generated {jobname}")
+## Sort out some things
+#if args.output is None: args.output = args.input
+#if args.account is None: args.account = ACCOUNTS[cluster]
+#
+## Define name of job file
+#jobname = os.path.join(args.destination, args.input + JOB_EXTENSION)
+#
+#if args.code == "orca":
+#
+#    job = orca_job(destination=args.destination, inputfile=args.input, outputfile=args.output, is_dev=args.dev,
+#                   cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
+#                   slurm_account=ACCOUNTS[cluster],
+#                   slurm_nodes=args.nodes,
+#                   slurm_ntasks_per_node=args.ntasks_per_node,
+#                   slurm_memory=args.memory,
+#                   slurm_time=args.time,
+#                   slurm_mail=args.mail,
+#                   chess=args.chess,
+#                   cxyz=args.cxyz,
+#                   ccomp=args.ccomp,
+#                   cbgw=args.cbgw)
+#
+#    with open(jobname, "w") as f:
+#        for line in job:
+#            f.write(line + "\n")
+#
+#    if args.verbose:
+#        print(f"Generated {jobname}")
 
     # Now execute
     # if args.execute:
