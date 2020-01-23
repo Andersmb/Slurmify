@@ -120,7 +120,7 @@ def orca_job(destination=None, inputfile=None, outputfile=None, is_dev=None, slu
     jobfile.append(f"#SBATCH --nodes={slurm_nodes}")
     jobfile.append(f"#SBATCH --ntasks-per-node={slurm_ntasks_per_node}")
     jobfile.append(f"#SBATCH --time={slurm_time}")
-    jobfile.append(f"#SBATCH --mem={slurm_memory}")
+    if cluster != "fram": jobfile.append(f"#SBATCH --mem={slurm_memory}")
     jobfile.append(f"#SBATCH --mail-type={slurm_mail}")
     if is_dev: jobfile.append("#SBATCH --qos=devel")
     jobfile.append("")
