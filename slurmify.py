@@ -9,7 +9,7 @@ from socket import gethostname
 import subprocess
 import json
 
-from utils import orca_job, vars
+from utils import orca_job, gaussian_job, vars
 
 
 # Determine cluster
@@ -20,7 +20,7 @@ elif "fram" in gethostname():
 elif "saga" in gethostname():
     cluster = "saga"
 else:
-    cluster = "stallo"
+    cluster = "saga"
 
 # Set some defaults
 INPUT_EXTENSION = ".inp"
@@ -80,7 +80,7 @@ parser.add_argument("-i", "--input", metavar="<>", type=str, help="[str] Name of
 parser.add_argument("-o", "--output", metavar="<>", type=str, help="[str] Name of output file")
 parser.add_argument("-c", "--code", metavar="<>",choices=["mrchem", "orca", "gaussian"], type=str, required=True, help="[str] Select code: {mrchem, orca, gaussian}")
 parser.add_argument("-D", "--dev", action="store_true", help="Generate job suitable for development queue")
-parser.add_argument("-v", "--verbose", action="store_true", help="Run in verbose mode")
+parser.add_argument("-s", "--silent", action="store_true", help="Run in silent mode")
 parser.add_argument("-x", "--execute", action="store_true", help="Submit job to queue")
 
 # SLURM specific arguments
@@ -93,10 +93,11 @@ parser.add_argument("-t", "--time", type=str, metavar="<>",default="00-00:30:00"
 parser.add_argument("-M", "--mail", type=str, metavar="<>",default="NONE", help="Specify the SLURM mail type")
 
 # Arguments for copying files to scratch
-parser.add_argument("--chess", action="store_true", help="Look for and copy .hess file (for ORCA jobs)")
-parser.add_argument("--cxyz", action="store_true", help="Look for and copy .xyz file (for ORCA jobs)")
-parser.add_argument("--ccomp", action="store_true", help="Look for and copy .cmp file (for ORCA jobs)")
-parser.add_argument("--cbgw", action="store_true", help="Look for and copy .bgw file (for ORCA jobs)")
+parser.add_argument("--chess", action="store_true", help="Look for and copy .hess file to scratch (for ORCA jobs)")
+parser.add_argument("--cxyz", action="store_true", help="Look for and copy .xyz file to scratch (for ORCA jobs)")
+parser.add_argument("--ccomp", action="store_true", help="Look for and copy .cmp file to scratch (for ORCA jobs)")
+parser.add_argument("--cbgw", action="store_true", help="Look for and copy .bgw file to scratch (for ORCA jobs)")
+parser.add_argument("--cchk", action="store_true", help="Copy .chk file to scratch (for Gaussian jobs)")
 
 args = parser.parse_args()
 
@@ -108,8 +109,7 @@ if args.account is None: args.account = ACCOUNTS[cluster]
 jobname = os.path.join(args.destination, args.input + JOB_EXTENSION)
 
 if args.code == "orca":
-
-    job = orca_job(destination=args.destination, inputfile=args.input, outputfile=args.output, is_dev=args.dev,
+    job = orca_job(inputfile=args.input, outputfile=args.output, is_dev=args.dev,
                    cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
                    slurm_account=ACCOUNTS[cluster],
                    slurm_nodes=args.nodes,
@@ -126,7 +126,30 @@ if args.code == "orca":
         for line in job:
             f.write(line + "\n")
 
-    if args.verbose:
+    if not args.silent:
+        print(f"Generated {jobname}")
+
+    # Now submit to queue
+    if args.execute:
+        os.chdir(args.destination)
+        subprocess.call(["sbatch", args.input+JOB_EXTENSION])
+
+elif args.code == "gaussian":
+    job = gaussian_job(inputfile=args.input, outputfile=args.output, is_dev=args.dev,
+                   cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
+                   slurm_account=ACCOUNTS[cluster],
+                   slurm_nodes=args.nodes,
+                   slurm_ntasks_per_node=args.ntasks_per_node,
+                   slurm_memory=args.memory,
+                   slurm_time=args.time,
+                   slurm_mail=args.mail,
+                   cchk=args.cchk)
+
+    with open(jobname, "w") as f:
+        for line in job:
+            f.write(line + "\n")
+
+    if not args.silent:
         print(f"Generated {jobname}")
 
     # Now submit to queue
