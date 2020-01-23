@@ -13,7 +13,7 @@
 .idea/**/*.xml
 .idea/workspace.xml
 
-.idea/
+.idea
 
 # virtual environment
 venv
