@@ -76,10 +76,31 @@ def get_orca_bgwfile(inputfile):
         sys.exit(f"Error! The input file ({inputfile}) was not found")
 
 
-def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, slurm_nodes=None,
+def orca_job(destination=None, inputfile=None, outputfile=None, is_dev=None, slurm_account=None, slurm_nodes=None,
              cluster=None, slurm_ntasks_per_node=None, slurm_memory=None, slurm_time=None,
              slurm_mail=None, extension_outputfile=None, extension_inputfile=None, chess=False, cxyz=False, ccomp=False,
              cbgw=False):
+    """
+
+    :param destination: working directory for the job
+    :param inputfile: name of input file without extension
+    :param outputfile: name of output file without extension
+    :param is_dev: prepare for development queue
+    :param slurm_account: slurm account number to be charged
+    :param slurm_nodes: number of nodes
+    :param cluster: for which cluster will the job be made
+    :param slurm_ntasks_per_node: number of tasks per node
+    :param slurm_memory: total memory per node
+    :param slurm_time: time limit for job
+    :param slurm_mail: mail notification type
+    :param extension_outputfile: extension used for output file
+    :param extension_inputfile: extension used for input file
+    :param chess: copy .hess file to scratch
+    :param cxyz: copy .xyz file to scratch
+    :param ccomp: copy .cmp file to scratcg
+    :param cbgw: copy .bgw file to scratcg
+    :return:
+    """
 
     assert slurm_memory.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
 
