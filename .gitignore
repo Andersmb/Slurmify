@@ -12,6 +12,8 @@
 .idea/**/contentModel.xml
 .idea/**/*.xml
 
+.idea/
+
 # virtual environment
 venv
 
@@ -204,3 +206,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# User files
+*.inp
+*.job
