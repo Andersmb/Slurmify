@@ -129,8 +129,8 @@ if args.code == "orca":
     if args.verbose:
         print(f"Generated {jobname}")
 
-    # Now execute
-    # if args.execute:
-    #     os.chdir(args.destination)
-    #     subprocess.call(["sbatch", args.input+JOB_EXTENSION])
+    # Now submit to queue
+    if args.execute:
+        os.chdir(args.destination)
+        subprocess.call(["sbatch", args.input+JOB_EXTENSION])
 
