@@ -183,7 +183,7 @@ def orca_job(destination=None, inputfile=None, outputfile=None, is_dev=None, slu
     jobfile.append("")
 
     # Copy back files
-    for ext in [".hess", ".xyz", "bgw", ".trj"]:
+    for ext in [".hess", ".xyz", ".bgw", ".trj", ".out"]:
         jobfile.append(f"cp {inputfile + ext} $SLURM_SUBMIT_DIR")
 
     jobfile.append("")
