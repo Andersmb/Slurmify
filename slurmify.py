@@ -3,10 +3,13 @@
 import argparse
 import sys
 import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from socket import gethostname
 import subprocess
+import json
 
-from utils import orca_job
+from utils import orca_job, vars
 
 
 # Determine cluster
@@ -27,12 +30,38 @@ ACCOUNTS = dict(fram="nn4654k",
                 saga="nn4654k",
                 stallo="nn9330k")
 
-epilog = """
+epilog = f"""
+-----
 USAGE
+-----
+...to be continued
 
+------------
 REQUIREMENTS
+------------
+...to be continued
 
+--------------------
+CONFIGURATION REPORT
+--------------------
+Current cluster: {cluster}
+Extension for input file: {INPUT_EXTENSION}
+Extension for output file: {OUTPUT_EXTENSION}
+extension for job file: {JOB_EXTENSION}
+Default accounts:
+    - Stallo: {ACCOUNTS['stallo']}
+    - Fram:   {ACCOUNTS['fram']}
+    - Saga:   {ACCOUNTS['saga']}
+
+{cluster}-specific variables defined in variable \"vars\" in utils.py:
+{json.dumps(vars[cluster], indent=4)}
+
+Current PATH:
+{":".join(sys.path)}
+
+------
 AUTHOR
+------
 |==========================================|
 |Anders Brakestad                          |
 |PhD Candidate in Computational Chemistry  |
