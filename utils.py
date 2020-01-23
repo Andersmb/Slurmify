@@ -7,17 +7,20 @@ import datetime
 vars = {
     "stallo": {
         "mpi_version": "OpenMPI/3.1.3-GCC-8.2.0-2.31.1",
+        "gaussian_version": "Gaussian/g16_C.01",
         "scratch": f"/global/work/ambr/${{SLURM_JOBID}}",
         "path_orca": f"/home/ambr/software/orca_4_1_2_linux_x86-64_openmpi313/orca",
         "path_mpi": "/global/hds/software/cpu/eb3/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/bin/mpirun"
     },
     "fram": {
         "mpi_version": "OpenMPI/3.1.3-GCC-8.2.0-2.31.1",
+        "gaussian_version": "Gaussian/g16_C.01",
         "path_orca": f"/cluster/home/ambr/software/orca_4_1_1_linux_x86-64_openmpi313/orca",
         "path_mpi": "/cluster/software/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/bin/mpirun"
     },
     "saga": {
         "mpi_version": "OpenMPI/3.1.1-GCC-7.3.0-2.30",
+        "gaussian_version": "Gaussian/g16_C.01",
         "path_orca": f"/cluster/home/ambr/software/orca_4_1_1_linux_x86-64_openmpi313/orca",
         "path_mpi": "/cluster/software/OpenMPI/3.1.1-GCC-7.3.0-2.30/bin"
     }
@@ -76,13 +79,12 @@ def get_orca_bgwfile(inputfile):
         sys.exit(f"Error! The input file ({inputfile}) was not found")
 
 
-def orca_job(destination=None, inputfile=None, outputfile=None, is_dev=None, slurm_account=None, slurm_nodes=None,
+def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, slurm_nodes=None,
              cluster=None, slurm_ntasks_per_node=None, slurm_memory=None, slurm_time=None,
              slurm_mail=None, extension_outputfile=None, extension_inputfile=None, chess=False, cxyz=False, ccomp=False,
              cbgw=False):
     """
 
-    :param destination: working directory for the job
     :param inputfile: name of input file without extension
     :param outputfile: name of output file without extension
     :param is_dev: prepare for development queue
@@ -133,16 +135,9 @@ def orca_job(destination=None, inputfile=None, outputfile=None, is_dev=None, slu
         jobfile.append("mkdir $SCRATCH")
         jobfile.append("")
 
-    # Define files for copying
-    # Use arguments to specify which files to copy
-
     # Copy files to SCRATCH
     jobfile.append(f"cp {inputfile+extension_inputfile} $SCRATCH")
 
-    # Determine which hess file to copy. Open the input file and look for a file name there,
-    # if not file is found, then try to copy a hess file with the same base name as the input file.
-    # If that also fails, then exit with error message.
-    # The same approach is used for xyz, cmp, and bgw files.
     if chess:
         hessfile = get_orca_hessfile(inputfile+extension_inputfile)
         if not os.path.isfile(hessfile):
@@ -196,5 +191,77 @@ def orca_job(destination=None, inputfile=None, outputfile=None, is_dev=None, slu
     return jobfile
 
 
+def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, slurm_nodes=None,
+             cluster=None, slurm_ntasks_per_node=None, slurm_memory=None, slurm_time=None,
+             slurm_mail=None, extension_outputfile=None, extension_inputfile=None, cchk=False):
+
+    assert slurm_memory.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
+
+    timestamp = f"# File generated {datetime.datetime.now()}"
+
+    jobfile = []
+    jobfile.append("#! /bin/bash")
+    jobfile.append("")
+    jobfile.append(f"#{'-'*len(timestamp)}")
+    jobfile.append(timestamp)
+    jobfile.append(f"#{'-'*len(timestamp)}")
+    jobfile.append("")
+    jobfile.append(f"#SBATCH --account={slurm_account}")
+    jobfile.append(f"#SBATCH --job-name={inputfile}")
+    jobfile.append(f"#SBATCH --output={outputfile+'.log'}")
+    jobfile.append(f"#SBATCH --error={outputfile+'.err'}")
+    jobfile.append(f"#SBATCH --nodes={slurm_nodes}")
+    jobfile.append(f"#SBATCH --ntasks-per-node={slurm_ntasks_per_node}")
+    jobfile.append(f"#SBATCH --time={slurm_time}")
+    if cluster != "fram": jobfile.append(f"#SBATCH --mem={slurm_memory}")
+    jobfile.append(f"#SBATCH --mail-type={slurm_mail}")
+    if is_dev: jobfile.append("#SBATCH --qos=devel")
+
+    jobfile.append("")
+    jobfile.append("module purge")
+    if cluster == "stallo": jobfile.append(f"module load notur")
+    jobfile.append(f"module load {vars[cluster]['gaussian_version']}")
+    jobfile.append("")
+
+    if cluster == "saga":
+        jobfile.append("export GAUSS_LFLAGS2='--LindaOptions -s 20000000'")
+        jobfile.append("")
+
+    if cluster == "stallo":
+        jobfile.append(f"SCRATCH={vars[cluster]['scratch']}")
+        jobfile.append(f"mkdir -p $SCRATCH")
+        jobfile.append("")
+
+    # Copy files to SCRATCH
+    jobfile.append(f"cp {inputfile+extension_inputfile} $SCRATCH")
+
+    if cchk:
+        if os.path.isfile(inputfile+'.chk'):
+            jobfile.append(f"cp {inputfile+'.chk'} $SCRATCH")
+        else:
+            print(f"Warning: Copy of .chk file requested, but the file does not exist ({inputfile+'.chk'}). Continuing without copying file.")
+
+
+    # Execute Gaussian
+    jobfile.append("")
+    jobfile.append(f"cd $SCRATCH")
+    jobfile.append(f"G09.prep.slurm {inputfile}")
+    jobfile.append(f"time g16 {inputfile+extension_inputfile} >& {outputfile+extension_outputfile}")
+    jobfile.append("")
+
+    # Copy back files
+    for ext in [".out", ".chk"]:
+        jobfile.append(f"cp {inputfile + ext} $SLURM_SUBMIT_DIR")
+
+    jobfile.append("")
+
+    # Clean up (On Fram and Saga clean up is automatic)
+    if cluster == "stallo":
+        jobfile.append(f"rm $SCRATCH/*")
+        jobfile.append(f"rmdir $SCRATCH")
+
+    return jobfile
+
+
 if __name__ == "__main__":
-    print(f"You just executed {__file__}")
+    print(f"Nothing happens when you execute {__file__}")
