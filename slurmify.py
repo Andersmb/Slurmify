@@ -89,7 +89,7 @@ parser.add_argument("-a", "--account", metavar="<>",type=str, help="Use this acc
 parser.add_argument("-n", "--nodes", metavar="<>",type=str, default="1", help="Specify number of nodes")
 parser.add_argument("-T", "--ntasks_per_node", metavar="<>",type=str, default="10", help="SLURM variable $NTASKS_PER_NODE")
 parser.add_argument("-p", "--cpus_per_task", metavar="<>",type=str, default="0", help="SLURM variable $CPUS_PER_TASK")
-parser.add_argument("-t", "--time", type=str, metavar="<>",default="00-01:00:00", help="Specify time [dd-hh:mm:ss]")
+parser.add_argument("-t", "--time", type=str, metavar="<>",default="00-00:30:00", help="Specify time [dd-hh:mm:ss]")
 parser.add_argument("-M", "--mail", type=str, metavar="<>",default="NONE", help="Specify the SLURM mail type")
 
 # Arguments for copying files to scratch
