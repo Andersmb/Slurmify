@@ -31,19 +31,19 @@ ACCOUNTS = dict(fram="nn4654k",
                 stallo="nn9330k")
 
 epilog = f"""
------
+=====
 USAGE
------
+=====
 ...to be continued
 
-------------
+============
 REQUIREMENTS
-------------
+============
 ...to be continued
 
---------------------
+====================
 CONFIGURATION REPORT
---------------------
+====================
 Current cluster: {cluster}
 Extension for input file: {INPUT_EXTENSION}
 Extension for output file: {OUTPUT_EXTENSION}
@@ -53,15 +53,15 @@ Default accounts:
     - Fram:   {ACCOUNTS['fram']}
     - Saga:   {ACCOUNTS['saga']}
 
-{cluster}-specific variables defined in variable \"vars\" in utils.py:
+{cluster}-specific variables defined in \"vars\" in utils.py:
 {json.dumps(vars[cluster], indent=4)}
 
 Current PATH:
 {":".join(sys.path)}
 
-------
+======
 AUTHOR
-------
+======
 |==========================================|
 |Anders Brakestad                          |
 |PhD Candidate in Computational Chemistry  |
@@ -76,6 +76,7 @@ parser = argparse.ArgumentParser(description=description, epilog=epilog,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
 
 parser.add_argument("-d", "--destination", metavar="<>", type=str, default=".", help="[str] Path to job directory")
+parser.add_argument("-o", "--input", metavar="<>", type=str, help="[str] Name of input file")
 parser.add_argument("-o", "--output", metavar="<>", type=str, help="[str] Name of output file")
 parser.add_argument("-c", "--code", metavar="<>",choices=["mrchem", "orca", "gaussian"], type=str, required=True, help="[str] Select code: {mrchem, orca, gaussian}")
 parser.add_argument("-D", "--dev", action="store_true", help="Generate job suitable for development queue")
