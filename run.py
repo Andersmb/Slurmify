@@ -49,8 +49,7 @@ parser = argparse.ArgumentParser(description=description, epilog=epilog,
 parser.add_argument("-d", "--destination", metavar="", type=str, default=".", help="[str] Path to job directory")
 parser.add_argument("-i", "--input", type=str, required=True, metavar="", help="[str] Name of input file")
 parser.add_argument("-o", "--output", type=str, metavar="", help="[str] Name of output file")
-parser.add_argument("-c", "--code", choices=["mrchem", "orca", "gaussian"], metavar="", type=str, required=True,
-                    help="[str] Select code: {mrchem, orca, gaussian}")
+parser.add_argument("-c", "--code", choices=["mrchem", "orca", "gaussian"], metavar="", type=str, required=True, help="[str] Select code: {mrchem, orca, gaussian}")
 parser.add_argument("-D", "--dev", action="store_true", help="Generate job suitable for development queue")
 parser.add_argument("-v", "--verbose", action="store_true", help="Run in verbose mode")
 parser.add_argument("-x", "--execute", action="store_true", help="Submit job to queue")
@@ -81,7 +80,7 @@ jobname = os.path.join(args.destination, args.input + JOB_EXTENSION)
 
 if args.code == "orca":
 
-    job = orca_job(inputfile=args.input, outputfile=args.output, is_dev=args.dev,
+    job = orca_job(destination=args.destination, inputfile=args.input, outputfile=args.output, is_dev=args.dev,
                    cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
                    slurm_account=ACCOUNTS[cluster],
                    slurm_nodes=args.nodes,
