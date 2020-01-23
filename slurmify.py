@@ -76,7 +76,7 @@ parser = argparse.ArgumentParser(description=description, epilog=epilog,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
 
 parser.add_argument("-d", "--destination", metavar="<>", type=str, default=".", help="[str] Path to job directory")
-parser.add_argument("-o", "--input", metavar="<>", type=str, help="[str] Name of input file")
+parser.add_argument("-i", "--input", metavar="<>", type=str, help="[str] Name of input file")
 parser.add_argument("-o", "--output", metavar="<>", type=str, help="[str] Name of output file")
 parser.add_argument("-c", "--code", metavar="<>",choices=["mrchem", "orca", "gaussian"], type=str, required=True, help="[str] Select code: {mrchem, orca, gaussian}")
 parser.add_argument("-D", "--dev", action="store_true", help="Generate job suitable for development queue")
