@@ -244,7 +244,7 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
     # Execute Gaussian
     jobfile.append("")
     jobfile.append(f"cd $SCRATCH")
-    jobfile.append(f"G09.prep.slurm {inputfile}")
+    if cluster == "stallo": jobfile.append(f"G09.prep.slurm {inputfile}")
     jobfile.append(f"time g16 < {inputfile+extension_inputfile} >& {outputfile+extension_outputfile}")
     jobfile.append("")
 
