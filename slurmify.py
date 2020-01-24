@@ -109,6 +109,11 @@ if args.account is None: args.account = ACCOUNTS[cluster]
 # Define name of job file
 jobname = os.path.join(args.destination, args.input + JOB_EXTENSION)
 
+if os.path.isfile(jobname):
+    answer = input("The .job file exists. Do you want to overwrite it? (Y/n) ").lower()
+    if answer not in ["yes", "y", ""]:
+        sys.exit("Aborted")
+
 if args.code == "orca":
     job = orca_job(inputfile=args.input, outputfile=args.output, is_dev=args.dev,
                    cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
