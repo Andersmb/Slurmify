@@ -7,20 +7,20 @@ import datetime
 vars = {
     "stallo": {
         "mpi_version": "OpenMPI/3.1.3-GCC-8.2.0-2.31.1",
-        "gaussian_version": "Gaussian/g16_C.01",
+        "gaussian_version": "Gaussian/g16_B.01",
         "scratch": f"/global/work/ambr/${{SLURM_JOBID}}",
         "path_orca": f"/home/ambr/software/orca_4_1_2_linux_x86-64_openmpi313/orca",
         "path_mpi": "/global/hds/software/cpu/eb3/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/bin/mpirun"
     },
     "fram": {
         "mpi_version": "OpenMPI/3.1.3-GCC-8.2.0-2.31.1",
-        "gaussian_version": "Gaussian/g16_C.01",
+        "gaussian_version": "Gaussian/g16_B.01",
         "path_orca": f"/cluster/home/ambr/software/orca_4_1_1_linux_x86-64_openmpi313/orca",
         "path_mpi": "/cluster/software/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/bin/mpirun"
     },
     "saga": {
         "mpi_version": "OpenMPI/3.1.1-GCC-7.3.0-2.30",
-        "gaussian_version": "Gaussian/g16_C.01",
+        "gaussian_version": "Gaussian/g16_B.01",
         "path_orca": f"/cluster/home/ambr/software/orca_4_1_1_linux_x86-64_openmpi313/orca",
         "path_mpi": "/cluster/software/OpenMPI/3.1.1-GCC-7.3.0-2.30/bin"
     }
@@ -219,7 +219,6 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
 
     jobfile.append("")
     jobfile.append("module purge")
-    if cluster == "stallo": jobfile.append(f"module load notur")
     jobfile.append(f"module load {vars[cluster]['gaussian_version']}")
     jobfile.append("")
 
@@ -246,7 +245,7 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
     jobfile.append("")
     jobfile.append(f"cd $SCRATCH")
     jobfile.append(f"G09.prep.slurm {inputfile}")
-    jobfile.append(f"time g16 {inputfile+extension_inputfile} >& {outputfile+extension_outputfile}")
+    jobfile.append(f"time g16 < {inputfile+extension_inputfile} >& {outputfile+extension_outputfile}")
     jobfile.append("")
 
     # Copy back files
