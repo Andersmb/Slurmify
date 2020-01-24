@@ -24,6 +24,7 @@ else:
 
 # Set some defaults
 INPUT_EXTENSION = ".inp"
+INPUT_EXTENSION_GAUSSIAN = ".com"
 OUTPUT_EXTENSION = ".out"
 JOB_EXTENSION = ".job"
 ACCOUNTS = dict(fram="nn4654k",
@@ -57,7 +58,7 @@ Default accounts:
 {json.dumps(vars[cluster], indent=4)}
 
 Current PATH:
-{":".join(sys.path)}
+{':'.join(sys.path)}
 
 ======
 AUTHOR
@@ -136,7 +137,7 @@ if args.code == "orca":
 
 elif args.code == "gaussian":
     job = gaussian_job(inputfile=args.input, outputfile=args.output, is_dev=args.dev,
-                   cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
+                   cluster=cluster, extension_inputfile=INPUT_EXTENSION_GAUSSIAN, extension_outputfile=OUTPUT_EXTENSION,
                    slurm_account=ACCOUNTS[cluster],
                    slurm_nodes=args.nodes,
                    slurm_ntasks_per_node=args.ntasks_per_node,
@@ -157,3 +158,4 @@ elif args.code == "gaussian":
         os.chdir(args.destination)
         subprocess.call(["sbatch", args.input+JOB_EXTENSION])
 
+# TODO fix destination argument
