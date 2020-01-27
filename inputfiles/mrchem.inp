@@ -1,0 +1,32 @@
+world_prec = 1e-4
+world_size = 4
+
+Basis {
+order = 8
+type = interpolating
+}
+
+Molecule {
+charge = 0
+multiplicity = 1
+angstrom = true
+translate = true
+$coords
+H 0.0 0.0 0.0
+$end
+}
+
+WaveFunction {
+method = pbe
+restricted = true
+}
+
+Properties {
+scf_energy = true
+}
+
+SCF {
+kain = 4
+initial_guess = sad_dz
+}
+
