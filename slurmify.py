@@ -61,6 +61,8 @@ Default accounts:
 {cluster.upper()}-specific variables defined in \"vars\" defined in utils.py:
 {json.dumps(vars[cluster], indent=4)}
 
+Root directory for Slurmify: {ROOT}
+
 Current PATH:
 {':'.join(sys.path)}
 
@@ -164,6 +166,7 @@ if args.test:
     # Submit jobs
     if args.execute:
         jobs = [os.path.join(args.destination, f) for f in ["orca_test", "gaussian_test", "mrchem_test"]]
+        os.chdir(args.destination)
         for job in jobs:
             subprocess.call(["sbatch", job+JOB_EXTENSION])
 
