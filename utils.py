@@ -19,10 +19,10 @@ vars = {
         "path_mpi": "/cluster/software/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/bin/mpirun"
     },
     "saga": {
-        "mpi_version": "OpenMPI/3.1.1-GCC-7.3.0-2.30",
+        "mpi_version": "OpenMPI/3.1.4-GCC-8.3.0",
         "gaussian_version": "Gaussian/g16_B.01",
-        "path_orca": f"/cluster/home/ambr/software/orca_4_1_1_linux_x86-64_openmpi313/orca",
-        "path_mpi": "/cluster/software/OpenMPI/3.1.1-GCC-7.3.0-2.30/bin"
+        "path_orca": f"/cluster/home/ambr/software/orca_4_2_1_linux_x86-64_openmpi314/orca",
+        "path_mpi": "/cluster/software/OpenMPI/3.1.4-GCC-8.3.0/bin"
     }
 }
 
