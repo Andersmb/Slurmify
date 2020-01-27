@@ -12,6 +12,8 @@ from utils import orca_job, gaussian_job, vars, input_origin
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+ROOT = os.getcwd()
+
 # Set some defaults
 INPUT_EXTENSION = ".inp"
 INPUT_EXTENSION_GAUSSIAN = ".com"
@@ -151,9 +153,9 @@ if args.test:
             f.write(line + "\n")
 
     # Copy test input files to destination
-    shutil.copyfile("inputfiles/orca.inp", os.path.join(args.destination, "orca_test.inp"))
-    shutil.copyfile("inputfiles/gaussian.inp", os.path.join(args.destination, "gaussian_test.inp"))
-    shutil.copyfile("inputfiles/mrchem.inp", os.path.join(args.destination, "mrchem_test.inp"))
+    shutil.copyfile(os.path.join(ROOT, "inputfiles/orca.inp"), os.path.join(args.destination, "orca_test.inp"))
+    shutil.copyfile(os.path.join(ROOT, "inputfiles/gaussian.inp"), os.path.join(args.destination, "gaussian_test.inp"))
+    shutil.copyfile(os.path.join(ROOT, "inputfiles/mrchem.inp"), os.path.join(args.destination, "mrchem_test.inp"))
 
     # Make sure that the user does not request multiple dev jobs, since each user is limited to just one at a time
     if args.dev:
