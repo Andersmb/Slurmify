@@ -106,7 +106,7 @@ args = parser.parse_args()
 if args.output is None: args.output = args.input
 if args.account is None: args.account = ACCOUNTS[cluster]
 
-# Evaluate whether the destination exists
+# Evaluate whether the destination exists, and ask for permission to create if
 if not os.path.isdir(args.destination):
     answer = input(f"The directory \"{args.destination}\" does not exist. Do you want to create it? (Y/n) ")
     if answer not in AFFIRMATIVE:
@@ -115,6 +115,7 @@ if not os.path.isdir(args.destination):
         os.mkdir(args.destination)
         print(f"Created \"{args.destination}\"")
 
+# Run testing module
 if args.test:
     job_orca = orca_job(inputfile="orca_test", outputfile="orca_test", is_dev=False,
                    cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
@@ -180,11 +181,13 @@ if not args.silent:
     else:
         print("MRChem input file detected.")
 
+# Make sure not to silently overwrite existing files
 if os.path.isfile(jobname):
     answer = input("The .job file exists. Do you want to overwrite it? (Y/n) ").lower()
     if answer not in AFFIRMATIVE:
         sys.exit("Aborted")
 
+# Generate job files
 if OrcaInput:
     job = orca_job(inputfile=args.input, outputfile=args.output, is_dev=args.dev,
                    cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
@@ -234,4 +237,4 @@ elif GaussianInput:
         os.chdir(args.destination)
         subprocess.call(["sbatch", args.input+JOB_EXTENSION])
 
-# TODO fix testing argument
+
