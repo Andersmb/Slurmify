@@ -155,9 +155,9 @@ if args.test:
             f.write(line + "\n")
 
     # Copy test input files to destination
-    shutil.copyfile(os.path.join(ROOT, "inputfiles/orca"+INPUT_EXTENSION), os.path.join(args.destination, "orca_test.inp"))
-    shutil.copyfile(os.path.join(ROOT, "inputfiles/gaussian"+INPUT_EXTENSION_GAUSSIAN), os.path.join(args.destination, "gaussian_test.inp"))
-    shutil.copyfile(os.path.join(ROOT, "inputfiles/mrchem"+INPUT_EXTENSION), os.path.join(args.destination, "mrchem_test.inp"))
+    shutil.copyfile(os.path.join(ROOT, "inputfiles/orca"+INPUT_EXTENSION), os.path.join(args.destination, "orca_test"+INPUT_EXTENSION))
+    shutil.copyfile(os.path.join(ROOT, "inputfiles/gaussian"+INPUT_EXTENSION_GAUSSIAN), os.path.join(args.destination, "gaussian_test"+INPUT_EXTENSION_GAUSSIAN))
+    shutil.copyfile(os.path.join(ROOT, "inputfiles/mrchem"+INPUT_EXTENSION), os.path.join(args.destination, "mrchem_test"+INPUT_EXTENSION))
 
     # Make sure that the user does not request multiple dev jobs, since each user is limited to just one at a time
     if args.dev:
@@ -167,6 +167,8 @@ if args.test:
     if args.execute:
         jobs = [os.path.join(args.destination, f) for f in ["orca_test", "gaussian_test", "mrchem_test"]]
         os.chdir(args.destination)
+        print("pwd", os.getcwd())
+        print("Jobs:", "\n".join(jobs))
         for job in jobs:
             subprocess.call(["sbatch", job+JOB_EXTENSION])
 
