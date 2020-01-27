@@ -3,14 +3,24 @@
 import argparse
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-from socket import gethostname
 import subprocess
 import json
+import shutil
+from socket import gethostname
 
-from utils import orca_job, gaussian_job, vars
+from utils import orca_job, gaussian_job, vars, input_origin
 
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Set some defaults
+INPUT_EXTENSION = ".inp"
+INPUT_EXTENSION_GAUSSIAN = ".com"
+OUTPUT_EXTENSION = ".out"
+JOB_EXTENSION = ".job"
+ACCOUNTS = dict(fram="nn4654k",
+                saga="nn4654k",
+                stallo="nn9330k")
+AFFIRMATIVE = ["yes", "y", ""]
 
 # Determine cluster
 if "stallo" in gethostname():
@@ -22,14 +32,6 @@ elif "saga" in gethostname():
 else:
     cluster = "saga"
 
-# Set some defaults
-INPUT_EXTENSION = ".inp"
-INPUT_EXTENSION_GAUSSIAN = ".com"
-OUTPUT_EXTENSION = ".out"
-JOB_EXTENSION = ".job"
-ACCOUNTS = dict(fram="nn4654k",
-                saga="nn4654k",
-                stallo="nn9330k")
 
 epilog = f"""
 =====
@@ -54,16 +56,14 @@ Default accounts:
     - Fram:   {ACCOUNTS['fram']}
     - Saga:   {ACCOUNTS['saga']}
 
-{cluster}-specific variables defined in \"vars\" in utils.py:
+{cluster.upper()}-specific variables defined in \"vars\" defined in utils.py:
 {json.dumps(vars[cluster], indent=4)}
 
 Current PATH:
 {':'.join(sys.path)}
 
-======
-AUTHOR
-======
-|==========================================|
+
+|=================AUTHOR===================|
 |Anders Brakestad                          |
 |PhD Candidate in Computational Chemistry  |
 |UiT The Arctic University of Norway       |
@@ -79,10 +79,10 @@ parser = argparse.ArgumentParser(description=description, epilog=epilog,
 parser.add_argument("-d", "--destination", metavar="<>", type=str, default=".", help="[str] Path to job directory")
 parser.add_argument("-i", "--input", metavar="<>", type=str, help="[str] Name of input file")
 parser.add_argument("-o", "--output", metavar="<>", type=str, help="[str] Name of output file")
-parser.add_argument("-c", "--code", metavar="<>",choices=["mrchem", "orca", "gaussian"], type=str, required=True, help="[str] Select code: {mrchem, orca, gaussian}")
 parser.add_argument("-D", "--dev", action="store_true", help="Generate job suitable for development queue")
-parser.add_argument("-s", "--silent", action="store_true", help="Run in silent mode")
-parser.add_argument("-x", "--execute", action="store_true", help="Submit job to queue")
+parser.add_argument("-S", "--silent", action="store_true", help="Run in silent mode")
+parser.add_argument("-X", "--execute", action="store_true", help="Submit job to queue")
+parser.add_argument("--test", action="store_true", help="Generate ORCA, Gaussian, and MRChem input files and submit to queue")
 
 # SLURM specific arguments
 parser.add_argument("-m", "--memory", metavar="<>",type=str, default="5GB", help="Total memory per node")
@@ -106,15 +106,86 @@ args = parser.parse_args()
 if args.output is None: args.output = args.input
 if args.account is None: args.account = ACCOUNTS[cluster]
 
+# Evaluate whether the destination exists
+if not os.path.isdir(args.destination):
+    answer = input(f"The directory \"{args.destination}\" does not exist. Do you want to create it? (Y/n) ")
+    if answer not in AFFIRMATIVE:
+        sys.exit("Aborting")
+    else:
+        os.mkdir(args.destination)
+        print(f"Created \"{args.destination}\"")
+
+if args.test:
+    job_orca = orca_job(inputfile="orca_test", outputfile="orca_test", is_dev=False,
+                   cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
+                   slurm_account=ACCOUNTS[cluster],
+                   slurm_nodes="1",
+                   slurm_ntasks_per_node="1",
+                   slurm_memory="1GB",
+                   slurm_time="00-00:05:00",
+                   slurm_mail="None")
+
+    job_gauss = gaussian_job(inputfile="gaussian_test", outputfile="gaussian_test", is_dev=False,
+                   cluster=cluster, extension_inputfile=INPUT_EXTENSION_GAUSSIAN, extension_outputfile=OUTPUT_EXTENSION,
+                   slurm_account=ACCOUNTS[cluster],
+                   slurm_nodes="1",
+                   slurm_ntasks_per_node="1",
+                   slurm_memory="1GB",
+                   slurm_time="00-00:05:00",
+                   slurm_mail="None")
+
+    job_mrchem = ""
+
+    # Create job files
+    with open(os.path.join(args.destination, "orca_test"+JOB_EXTENSION), "w") as f:
+        for line in job_orca:
+            f.write(line + "\n")
+
+    with open(os.path.join(args.destination, "gaussian_test"+JOB_EXTENSION), "w") as f:
+        for line in job_gauss:
+            f.write(line + "\n")
+
+    with open(os.path.join(args.destination, "mrchem_test"+JOB_EXTENSION), "w") as f:
+        for line in job_mrchem:
+            f.write(line + "\n")
+
+    # Copy test input files to destination
+    shutil.copyfile("inputfiles/orca.inp", os.path.join(args.destination, "orca_test.inp"))
+    shutil.copyfile("inputfiles/gaussian.inp", os.path.join(args.destination, "gaussian_test.inp"))
+    shutil.copyfile("inputfiles/mrchem.inp", os.path.join(args.destination, "mrchem_test.inp"))
+
+    # Make sure that the user does not request multiple dev jobs, since each user is limited to just one at a time
+    if args.dev:
+        print("Warning: You are limited to just one dev job at any given time. Therefore normal jobs are now created.")
+
+    # Submit jobs
+    if args.execute:
+        jobs = [os.path.join(args.destination, f) for f in ["orca_test", "gaussian_test", "mrchem_test"]]
+        for job in jobs:
+            subprocess.call(["sbatch", job+JOB_EXTENSION])
+
+
+    sys.exit("Testing done")
+
 # Define name of job file
 jobname = os.path.join(args.destination, args.input + JOB_EXTENSION)
 
+# Determine origin of input file
+GaussianInput, OrcaInput, Mrcheminput = input_origin(os.path.join(args.destination, args.input+INPUT_EXTENSION))
+if not args.silent:
+    if GaussianInput:
+        print("Gaussian input file detected.")
+    elif OrcaInput:
+        print("ORCA input file detected.")
+    else:
+        print("MRChem input file detected.")
+
 if os.path.isfile(jobname):
     answer = input("The .job file exists. Do you want to overwrite it? (Y/n) ").lower()
-    if answer not in ["yes", "y", ""]:
+    if answer not in AFFIRMATIVE:
         sys.exit("Aborted")
 
-if args.code == "orca":
+if OrcaInput:
     job = orca_job(inputfile=args.input, outputfile=args.output, is_dev=args.dev,
                    cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
                    slurm_account=ACCOUNTS[cluster],
@@ -140,7 +211,7 @@ if args.code == "orca":
         os.chdir(args.destination)
         subprocess.call(["sbatch", args.input+JOB_EXTENSION])
 
-elif args.code == "gaussian":
+elif GaussianInput:
     job = gaussian_job(inputfile=args.input, outputfile=args.output, is_dev=args.dev,
                    cluster=cluster, extension_inputfile=INPUT_EXTENSION_GAUSSIAN, extension_outputfile=OUTPUT_EXTENSION,
                    slurm_account=ACCOUNTS[cluster],
@@ -163,4 +234,4 @@ elif args.code == "gaussian":
         os.chdir(args.destination)
         subprocess.call(["sbatch", args.input+JOB_EXTENSION])
 
-# TODO fix destination argument
+# TODO fix testing argument
