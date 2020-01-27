@@ -209,6 +209,5 @@ dmypy.json
 .pyre/
 
 # User files
-*.inp
 *.job
 *.xml
