@@ -10,9 +10,9 @@ from socket import gethostname
 
 from utils import orca_job, gaussian_job, vars, input_origin
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(ROOT)
 
-ROOT = os.getcwd()
 
 # Set some defaults
 INPUT_EXTENSION = ".inp"
