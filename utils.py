@@ -27,6 +27,18 @@ vars = {
 }
 
 
+def input_origin(inputfile):
+    G, O, M = False, False, False
+    content = open(inputfile).readlines()
+    if any(["".join(line.split()).startswith("*xyz") for line in content]):
+        O = True
+    elif any(["".join(line.split()).startswith("world_prec") for line in content]):
+        M = True
+    else:
+        G = True
+    return G, O, M
+
+
 def get_orca_hessfile(inputfile):
     try:
         content = open(inputfile).readlines()
