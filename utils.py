@@ -27,6 +27,56 @@ vars = {
 }
 
 
+def make_test_inputs(destination, extension, gaussian_extension):
+    with open(os.path.join(destination, "mrchem_test"+extension), "w") as f:
+        f.write("world_prec = 4\n")
+        f.write("world_size = 4\n")
+        f.write("\n")
+        f.write("Basis {\n")
+        f.write("order = 8\n")
+        f.write("type = interpolating\n")
+        f.write("}\n")
+        f.write("\n")
+        f.write("Molecule {\n")
+        f.write("charge = 0\n")
+        f.write("multiplicity = 2\n")
+        f.write("angstrom = true\n")
+        f.write("translate = true\n")
+        f.write("$coords\n")
+        f.write("H 0.0 0.0 0.0\n")
+        f.write("$end\n")
+        f.write("}\n")
+        f.write("\n")
+        f.write("WaveFunction {\n")
+        f.write("method = pbe\n")
+        f.write("restricted = false\n")
+        f.write("}\n")
+        f.write("\n")
+        f.write("Properties {\n")
+        f.write("scf_energy = true\n")
+        f.write("}\n")
+        f.write("\n")
+        f.write("SCF {\n")
+        f.write("kain = 4\n")
+        f.write("initial_guess = sad_dz\n")
+        f.write("}\n")
+
+    with open(os.path.join(destination, "gaussian_test"+gaussian_extension), "w") as f:
+        f.write("#p pbepbe\n")
+        f.write("\n")
+        f.write("Comment\n")
+        f.write("\n")
+        f.write("0 2\n")
+        f.write("H 0.0 0.0 0.0\n")
+        f.write("\n")
+
+    with open(os.path.join(destination, "orca_test"+extension), "w") as f:
+        f.write("! pbe sto-3g\n")
+        f.write("* xyz 0 2\n")
+        f.write("H 0.0 0.0 0.0\n")
+        f.write("*\n")
+
+
 def input_origin(inputfile):
     G, O, M = False, False, False
     content = open(inputfile).readlines()
