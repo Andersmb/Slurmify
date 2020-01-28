@@ -27,7 +27,14 @@ vars = {
 }
 
 
-def make_test_inputs(destination, extension, gaussian_extension):
+def make_test_inputs(destination=".inp", extension=".inp", gaussian_extension=".com"):
+    """
+    Generate simple single-point calculations on H atom for testing if the job script works.
+    :param destination: testing directory. current dir if not specified
+    :param extension: input file extension for orca and mrchem
+    :param gaussian_extension: gaussian input file extension
+    :return:
+    """
     with open(os.path.join(destination, "mrchem_test"+extension), "w") as f:
         f.write("world_prec = 4\n")
         f.write("world_size = 4\n")
@@ -236,7 +243,7 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
     # Execute ORCA
     jobfile.append("")
     jobfile.append("cd $SCRATCH")
-    jobfile.append(f"time $ORCA {inputfile+extension_inputfile} >& {outputfile+extension_outputfile}")
+    jobfile.append(f"time $ORCA {inputfile+extension_inputfile} > {outputfile+extension_outputfile}")
     jobfile.append("")
 
     # Copy back files
