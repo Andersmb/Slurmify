@@ -257,7 +257,7 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
     jobfile.append("")
     jobfile.append(f"cd $SCRATCH")
     if cluster == "stallo": jobfile.append(f"G09.prep.slurm {inputfile}")
-    jobfile.append(f"time g16 < {inputfile+extension_inputfile} >& {outputfile+extension_outputfile}")
+    jobfile.append(f"time g16.ib < {inputfile+extension_inputfile} > {outputfile+extension_outputfile}")
     jobfile.append("")
 
     # Copy back files
