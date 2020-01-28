@@ -8,7 +8,7 @@ import json
 import shutil
 from socket import gethostname
 
-from utils import orca_job, gaussian_job, vars, input_origin
+from utils import orca_job, gaussian_job, vars, input_origin, make_test_inputs
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(ROOT)
@@ -155,55 +155,9 @@ if args.test:
             f.write(line + "\n")
 
     # Create test input files
-    with open(os.path.join(args.destination, "mrchem_test"+INPUT_EXTENSION), "w") as f:
-        f.write("world_prec = 4\n")
-        f.write("world_size = 4\n")
-        f.write("\n")
-        f.write("Basis {\n")
-        f.write("order = 8\n")
-        f.write("type = interpolating\n")
-        f.write("}\n")
-        f.write("\n")
-        f.write("Molecule {\n")
-        f.write("charge = 0\n")
-        f.write("multiplicity = 2\n")
-        f.write("angstrom = true\n")
-        f.write("translate = true\n")
-        f.write("$coords\n")
-        f.write("H 0.0 0.0 0.0\n")
-        f.write("$end\n")
-        f.write("}\n")
-        f.write("\n")
-        f.write("WaveFunction {\n")
-        f.write("method = pbe\n")
-        f.write("restricted = false\n")
-        f.write("}\n")
-        f.write("\n")
-        f.write("Properties {\n")
-        f.write("scf_energy = true\n")
-        f.write("}\n")
-        f.write("\n")
-        f.write("SCF\n")
-        f.write("\n")
-        f.write("kain = 4\n")
-        f.write("initial_guess = sad_dz\n")
-        f.write("}\n")
-
-    with open(os.path.join(args.destination, "gaussian_test"+INPUT_EXTENSION_GAUSSIAN), "w") as f:
-        f.write("#p pbepbe\n")
-        f.write("\n")
-        f.write("Comment\n")
-        f.write("\n")
-        f.write("0 2\n")
-        f.write("H 0.0 0.0 0.0\n")
-        f.write("\n")
-
-    with open(os.path.join(args.destination, "orca_test"+INPUT_EXTENSION), "w") as f:
-        f.write("! pbe sto-3g\n")
-        f.write("* xyz 0 2\n")
-        f.write("H 0.0 0.0 0.0\n")
-        f.write("*\n")
-
+    make_test_inputs(destination=args.destination,
+                     extension=INPUT_EXTENSION,
+                     gaussian_extension=INPUT_EXTENSION_GAUSSIAN)
 
     # Make sure that the user does not request multiple dev jobs, since each user is limited to just one at a time
     if args.dev:
