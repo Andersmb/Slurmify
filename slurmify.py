@@ -154,10 +154,56 @@ if args.test:
         for line in job_mrchem:
             f.write(line + "\n")
 
-    # Copy test input files to destination
-    shutil.copyfile(os.path.join(ROOT, "inputfiles/orca"+INPUT_EXTENSION), os.path.join(args.destination, "orca_test"+INPUT_EXTENSION))
-    shutil.copyfile(os.path.join(ROOT, "inputfiles/gaussian"+INPUT_EXTENSION_GAUSSIAN), os.path.join(args.destination, "gaussian_test"+INPUT_EXTENSION_GAUSSIAN))
-    shutil.copyfile(os.path.join(ROOT, "inputfiles/mrchem"+INPUT_EXTENSION), os.path.join(args.destination, "mrchem_test"+INPUT_EXTENSION))
+    # Create test input files
+    with open(os.path.join(args.destination, "mrchem_test"+INPUT_EXTENSION), "w") as f:
+        f.write("world_prec = 4\n")
+        f.write("world_size = 4\n")
+        f.write("\n")
+        f.write("Basis {\n")
+        f.write("order = 8\n")
+        f.write("type = interpolating\n")
+        f.write("}\n")
+        f.write("\n")
+        f.write("Molecule {\n")
+        f.write("charge = 0\n")
+        f.write("multiplicity = 2\n")
+        f.write("angstrom = true\n")
+        f.write("translate = true\n")
+        f.write("$coords\n")
+        f.write("H 0.0 0.0 0.0\n")
+        f.write("$end\n")
+        f.write("}\n")
+        f.write("\n")
+        f.write("WaveFunction {\n")
+        f.write("method = pbe\n")
+        f.write("restricted = false\n")
+        f.write("}\n")
+        f.write("\n")
+        f.write("Properties {\n")
+        f.write("scf_energy = true\n")
+        f.write("}\n")
+        f.write("\n")
+        f.write("SCF\n")
+        f.write("\n")
+        f.write("kain = 4\n")
+        f.write("initial_guess = sad_dz\n")
+        f.write("}\n")
+
+    with open(os.path.join(args.destination, "gaussian_test"+INPUT_EXTENSION_GAUSSIAN), "w") as f:
+        f.write("#p pbepbe\n")
+        f.write("\n")
+        f.write("Comment\n")
+        f.write("\n")
+        f.write("0 2\n")
+        f.write("H 0.0 0.0 0.0\n")
+        f.write("\n")
+
+    with open(os.path.join(args.destination, "orca_test"+INPUT_EXTENSION), "w") as f:
+        f.write("! pbe sto-3g\n")
+        f.write("* xyz 0 2\n")
+        f.write("H 0.0 0.0 0.0\n")
+        f.write("*\n")
+
 
     # Make sure that the user does not request multiple dev jobs, since each user is limited to just one at a time
     if args.dev:
@@ -245,3 +291,4 @@ elif GaussianInput:
         subprocess.call(["sbatch", args.input+JOB_EXTENSION])
 
 
+# TODO gaussian test jobs terminating with segmentation error. why?
