@@ -211,3 +211,4 @@ dmypy.json
 # User files
 *.job
 *.xml
+*.inp
