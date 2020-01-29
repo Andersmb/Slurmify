@@ -48,7 +48,7 @@ def make_test_inputs(destination=".inp", extension=".inp", gaussian_extension=".
     :return:
     """
     with open(os.path.join(destination, "mrchem_test"+extension), "w") as f:
-        f.write("world_prec = 4\n")
+        f.write("world_prec = 1.0e-4\n")
         f.write("world_size = 4\n")
         f.write("\n")
         f.write("Basis {\n")
