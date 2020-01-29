@@ -9,7 +9,7 @@ import json
 import shutil
 from socket import gethostname
 
-from utils import orca_job, gaussian_job, vars, input_origin, make_test_inputs
+from utils import orca_job, gaussian_job, mrchem_job, vars, input_origin, make_test_inputs
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(ROOT)
@@ -104,6 +104,7 @@ parser.add_argument("--cxyz", action="store_true", help="Look for and copy .xyz 
 parser.add_argument("--ccomp", action="store_true", help="Look for and copy .cmp file to scratch (for ORCA jobs)")
 parser.add_argument("--cbgw", action="store_true", help="Look for and copy .bgw file to scratch (for ORCA jobs)")
 parser.add_argument("--cchk", action="store_true", help="Copy .chk file to scratch (for Gaussian jobs)")
+parser.add_argument("--initorb", metavar="<>", type=str, help="Path to directory storing orbitals to be copied (for MRChem jobs)")
 
 args = parser.parse_args()
 
@@ -133,7 +134,7 @@ if args.test:
                    slurm_time="00-00:05:00",
                    slurm_mail="None")
 
-    job_gauss = gaussian_job(inputfile="gaussian_test", outputfile="gaussian_test", is_dev=False,
+    job_gaussian = gaussian_job(inputfile="gaussian_test", outputfile="gaussian_test", is_dev=False,
                    cluster=cluster, extension_inputfile=INPUT_EXTENSION_GAUSSIAN, extension_outputfile=OUTPUT_EXTENSION,
                    slurm_account=ACCOUNTS[cluster],
                    slurm_nodes="1",
@@ -142,7 +143,15 @@ if args.test:
                    slurm_time="00-00:05:00",
                    slurm_mail="None")
 
-    job_mrchem = ""
+    job_mrchem = mrchem_job(inputfile="mrchem_test", outputfile="mrchem_test", is_dev=False,
+                   cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
+                   slurm_account=ACCOUNTS[cluster],
+                   slurm_nodes="1",
+                   slurm_ntasks_per_node="1",
+                   slurm_cpus_per_task="1",
+                   slurm_memory="1GB",
+                   slurm_time="00-00:10:00",
+                   slurm_mail="None")
 
     # Create job files
     with open(os.path.join(args.destination, "orca_test"+JOB_EXTENSION), "w") as f:
@@ -150,7 +159,7 @@ if args.test:
             f.write(line + "\n")
 
     with open(os.path.join(args.destination, "gaussian_test"+JOB_EXTENSION), "w") as f:
-        for line in job_gauss:
+        for line in job_gaussian:
             f.write(line + "\n")
 
     with open(os.path.join(args.destination, "mrchem_test"+JOB_EXTENSION), "w") as f:

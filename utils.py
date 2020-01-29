@@ -10,19 +10,31 @@ vars = {
         "gaussian_version": "Gaussian/g16_B.01",
         "scratch": f"/global/work/ambr/${{SLURM_JOBID}}",
         "path_orca": f"/home/ambr/software/orca_4_1_2_linux_x86-64_openmpi313/orca",
-        "path_mpi": "/global/hds/software/cpu/eb3/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/bin"
+        "path_mpi": "/global/hds/software/cpu/eb3/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/bin",
+        "path_mrchem": "/home/ambr/mrchem022/build/bin",
+        "mrchen_venv": "/home/ambr/.local/share/virtualenvs/mrchem022-AGBL_r_i/bin/activate",
+        "modules_mrchem": ["intel/2018b", "Python/3.7.0-intel-2018b"],
+        "orbdir": "/global/work/ambr/MWorbitals_${SLURM_JOBID}"
     },
     "fram": {
         "mpi_version": "OpenMPI/3.1.3-GCC-8.2.0-2.31.1",
         "gaussian_version": "Gaussian/g16_B.01",
         "path_orca": f"/cluster/home/ambr/software/orca_4_1_1_linux_x86-64_openmpi313/orca",
-        "path_mpi": "/cluster/software/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/bin"
+        "path_mpi": "/cluster/software/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/bin",
+        "path_mrchem": "/cluster/home/ambr/mrchem022/build/bin",
+        "modules_mrchem": ["intel/2017a", "Python/3.6.1-intel-2017a"],
+        "mrchem_venv": "/cluster/home/ambr/.local/share/virtualenvs/mrchem022-RcvyK6hG/bin/activate",
+        "orbdir": "/cluster/work/users/ambr/MWorbitals_${SLURM_JOBID}"
     },
     "saga": {
         "mpi_version": "OpenMPI/3.1.4-GCC-8.3.0",
         "gaussian_version": "Gaussian/g16_B.01",
         "path_orca": f"/cluster/home/ambr/software/orca_4_2_1_linux_x86-64_openmpi314/orca",
-        "path_mpi": "/cluster/software/OpenMPI/3.1.4-GCC-8.3.0/bin"
+        "path_mpi": "/cluster/software/OpenMPI/3.1.4-GCC-8.3.0/bin",
+        "path_mrchem": "/cluster/home/ambr/mrchem022/build/bin",
+        "modules_mrchem": ["intel/2018b", "Python/3.6.6-intel-2018b"],
+        "mrchem_venv": "/cluster/home/ambr/.local/share/virtualenvs/mrchem022-RcvyK6hG/bin/activate",
+        "orbdir": "/cluster/work/users/ambr/MWorbitals_${SLURM_JOBID}"
     }
 }
 
@@ -326,6 +338,63 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
     if cluster == "stallo":
         jobfile.append(f"rm $SCRATCH/*")
         jobfile.append(f"rmdir $SCRATCH")
+
+    return jobfile
+
+
+def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, slurm_nodes=None,
+             cluster=None, slurm_ntasks_per_node=None, slurm_cpus_per_task=None, slurm_memory=None, slurm_time=None,
+             slurm_mail=None, extension_outputfile=None, extension_inputfile=None, initorb=None):
+
+    assert slurm_memory.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
+
+    timestamp = f"# File generated {datetime.datetime.now()}"
+
+    jobfile = []
+    jobfile.append("#! /bin/bash")
+    jobfile.append("")
+    jobfile.append(f"#{'-' * len(timestamp)}")
+    jobfile.append(timestamp)
+    jobfile.append(f"#{'-' * len(timestamp)}")
+    jobfile.append("")
+    jobfile.append(f"#SBATCH --account={slurm_account}")
+    jobfile.append(f"#SBATCH --job-name={inputfile}")
+    jobfile.append(f"#SBATCH --output={outputfile + '.log'}")
+    jobfile.append(f"#SBATCH --error={outputfile + '.err'}")
+    jobfile.append(f"#SBATCH --nodes={slurm_nodes}")
+    jobfile.append(f"#SBATCH --ntasks-per-node={slurm_ntasks_per_node}")
+    jobfile.append(f"#SBATCH --cpus-per-task={slurm_cpus_per_task}")
+    jobfile.append(f"#SBATCH --time={slurm_time}")
+    if cluster != "fram": jobfile.append(f"#SBATCH --mem={slurm_memory}")
+    jobfile.append(f"#SBATCH --mail-type={slurm_mail}")
+    if is_dev: jobfile.append("#SBATCH --qos=devel")
+    jobfile.append("")
+    jobfile.append("module purge")
+    for module in vars[cluster]["modules_mrchem"]:
+        jobfile.append(f"module load {module}")
+    jobfile.append("")
+
+    jobfile.append(f"export OMP_NUM_THREADS={slurm_cpus_per_task}")
+    jobfile.append("")
+
+    jobfile.append(f"cp {os.path.join(inputfile+extension_inputfile)} $SCRATCH")
+
+    if initorb is not None:
+        jobfile.append(f"cp -r {initorb} $SCRATCH/orbitals")
+
+    jobfile.append("")
+    jobfile.append(f"source {vars[cluster]['mrchem_venv']}")
+    jobfile.append("")
+
+    jobfile.append("cd $SCRATCH")
+    jobfile.append(f"{vars[cluster]['path_mrchem']}/mrchem -D {inputfile+extension_inputfile}")
+    jobfile.append(f"{vars[cluster]['path_mrchem']}/mrchem.x mrchem_parsed.json > {inputfile+extension_outputfile}")
+    jobfile.append("")
+
+    jobfile.append(f"savefile {inputfile+extension_outputfile}")
+    jobfile.append(f"mkdir -p {vars[cluster]['orbdir']}")
+    jobfile.append(f"cp orbitals/* {vars[cluster]['orbdir']}/")
+    jobfile.append(f"echo {vars[cluster]['orbdir']} > ${{SLURM_SUBMIT_DIR}}/{inputfile}.orbitals")
 
     return jobfile
 
