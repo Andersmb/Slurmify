@@ -12,7 +12,7 @@ vars = {
         "path_orca": f"/home/ambr/software/orca_4_1_2_linux_x86-64_openmpi313/orca",
         "path_mpi": "/global/hds/software/cpu/eb3/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/bin",
         "path_mrchem": "/home/ambr/mrchem022/build/bin",
-        "mrchen_venv": "/home/ambr/.local/share/virtualenvs/mrchem022-AGBL_r_i/bin/activate",
+        "mrchem_venv": "/home/ambr/.local/share/virtualenvs/mrchem022-AGBL_r_i/bin/activate",
         "modules_mrchem": ["intel/2018b", "Python/3.7.0-intel-2018b"],
         "orbdir": "/global/work/ambr/MWorbitals_${SLURM_JOBID}"
     },
