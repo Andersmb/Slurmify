@@ -377,6 +377,11 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append(f"export OMP_NUM_THREADS={slurm_cpus_per_task}")
     jobfile.append("")
 
+    if cluster == "stallo":
+        jobfile.append(f"SCRATCH={vars[cluster]['scratch']}")
+        jobfile.append(f"mkdir -p $SCRATCH")
+        jobfile.append("")
+
     jobfile.append(f"cp {os.path.join(inputfile+extension_inputfile)} $SCRATCH")
 
     if initorb is not None:
