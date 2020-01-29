@@ -388,10 +388,14 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
 
     jobfile.append("cd $SCRATCH")
     jobfile.append(f"{vars[cluster]['path_mrchem']}/mrchem -D {inputfile+extension_inputfile}")
-    jobfile.append(f"{vars[cluster]['path_mrchem']}/mrchem.x mrchem_parsed.json > {inputfile+extension_outputfile}")
+    jobfile.append(f"{vars[cluster]['path_mrchem']}/mrchem.x {inputfile+'_parsed.json'}.json > {inputfile+extension_outputfile}")
     jobfile.append("")
 
-    jobfile.append(f"savefile {inputfile+extension_outputfile}")
+    if cluster == "stallo":
+        jobfile.append(f"cp {inputfile+extension_outputfile} ${{SLURM_SUBMIT_DIR}}/")
+    else:
+        jobfile.append(f"savefile {inputfile+extension_outputfile}")
+
     jobfile.append(f"mkdir -p {vars[cluster]['orbdir']}")
     jobfile.append(f"cp orbitals/* {vars[cluster]['orbdir']}/")
     jobfile.append(f"echo {vars[cluster]['orbdir']} > ${{SLURM_SUBMIT_DIR}}/{inputfile}.orbitals")
