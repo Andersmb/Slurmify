@@ -269,6 +269,9 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
         jobfile.append("rm $SCRATCH/*")
         jobfile.append("rmdir $SCRATCH")
 
+    jobfile.append("")
+    jobfile.append("exit 0")
+
     return jobfile
 
 
@@ -339,6 +342,9 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
         jobfile.append(f"rm $SCRATCH/*")
         jobfile.append(f"rmdir $SCRATCH")
 
+    jobfile.append("")
+    jobfile.append("exit 0")
+
     return jobfile
 
 
@@ -404,6 +410,9 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append(f"mkdir -p {vars[cluster]['orbdir']}")
     jobfile.append(f"cp orbitals/* {vars[cluster]['orbdir']}/")
     jobfile.append(f"echo {vars[cluster]['orbdir']} > ${{SLURM_SUBMIT_DIR}}/{inputfile}.orbitals")
+
+    jobfile.append("")
+    jobfile.append("exit 0")
 
     return jobfile
 
