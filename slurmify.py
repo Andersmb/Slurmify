@@ -175,11 +175,8 @@ if args.test:
 
     # Submit jobs
     if args.execute:
-        jobs = [os.path.join(args.destination, f) for f in ["orca_test", "gaussian_test", "mrchem_test"]]
         os.chdir(args.destination)
-        print("pwd", os.getcwd())
-        print("Jobs:", "\n".join(jobs))
-        for job in jobs:
+        for job in ["orca_test", "gaussian_test", "mrchem_test"]:
             subprocess.call(["sbatch", job+JOB_EXTENSION])
 
     sys.exit("Testing done")
