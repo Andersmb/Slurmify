@@ -3,7 +3,16 @@ import os
 import datetime
 
 
-# Set some variables
+#########################################################
+#   --U S E R    D E F I N E D    V A R I A B L E S--   #
+#########################################################
+# You need to make sure to get the following paths and
+# modules correct, in order for Slumify to run with
+# problems.
+# The variable 'orbdir' you can set freely, but it is
+# recommended that this is limited to the work area,
+# since orbital files can occupy many GBs worth of data
+#########################################################
 vars = {
     "stallo": {
         "mpi_version": "OpenMPI/3.1.3-GCC-8.2.0-2.31.1",
@@ -37,9 +46,10 @@ vars = {
         "orbdir": "/cluster/work/users/ambr/MWorbitals_${SLURM_JOBID}"
     }
 }
+#########################################################
 
 
-def make_test_inputs(destination=".inp", extension=".inp", gaussian_extension=".com"):
+def make_test_inputs(destination=".", extension=".inp"):
     """
     Generate simple single-point calculations on H atom for testing if the job script works.
     :param destination: testing directory. current dir if not specified
@@ -80,7 +90,7 @@ def make_test_inputs(destination=".inp", extension=".inp", gaussian_extension=".
         f.write("initial_guess = sad_dz\n")
         f.write("}\n")
 
-    with open(os.path.join(destination, "gaussian_test"+gaussian_extension), "w") as f:
+    with open(os.path.join(destination, "gaussian_test"+extension), "w") as f:
         f.write("#p pbepbe\n")
         f.write("\n")
         f.write("Comment\n")
@@ -327,7 +337,15 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
     # Execute Gaussian
     jobfile.append("")
     jobfile.append(f"cd $SCRATCH")
-    if cluster == "stallo": jobfile.append(f"G09.prep.slurm {inputfile}")
+
+    if cluster == "stallo":
+        if extension_inputfile != ".com":
+            jobfile.append(f"mv {inputfile+extension_inputfile} {inputfile+'.com'}")
+        jobfile.append(f"G09.prep.slurm {inputfile}")
+        if extension_inputfile != ".com":
+            jobfile.append(f"mv {inputfile+'.com'} {inputfile+extension_inputfile}")
+        jobfile.append("")
+
     jobfile.append(f"time g16.ib {inputfile+extension_inputfile} > {outputfile+extension_outputfile}")
     jobfile.append("")
 
@@ -341,8 +359,8 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
     if cluster == "stallo":
         jobfile.append(f"rm $SCRATCH/*")
         jobfile.append(f"rmdir $SCRATCH")
+        jobfile.append("")
 
-    jobfile.append("")
     jobfile.append("exit 0")
 
     return jobfile
