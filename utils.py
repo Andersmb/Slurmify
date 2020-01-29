@@ -49,6 +49,16 @@ vars = {
 #########################################################
 
 
+def header(hdr):
+    title = "="*20 + " "*5 + " ".join(hdr.upper()) + " "*5 + "="*20
+    my_header = f"""
+    {"="*len(title)}
+    {title}
+    {"="*len(title)}
+    """
+    return my_header
+
+
 def make_test_inputs(destination=".", extension=".inp"):
     """
     Generate simple single-point calculations on H atom for testing if the job script works.
