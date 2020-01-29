@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # coding=utf-8
 
 import argparse
@@ -109,6 +110,8 @@ args = parser.parse_args()
 # Sort out some things
 if args.output is None: args.output = args.input
 if args.account is None: args.account = ACCOUNTS[cluster]
+if cluster == "fram" and int(args.nodes) < 4 and not args.dev:
+    sys.exit("4 nodes is the minimum node-count on fram for non-dev jobs")
 
 # Evaluate whether the destination exists, and ask for permission to create if
 if not os.path.isdir(args.destination):
@@ -171,7 +174,6 @@ if args.test:
         print("Jobs:", "\n".join(jobs))
         for job in jobs:
             subprocess.call(["sbatch", job+JOB_EXTENSION])
-
 
     sys.exit("Testing done")
 
@@ -245,4 +247,5 @@ elif GaussianInput:
         subprocess.call(["sbatch", args.input+JOB_EXTENSION])
 
 
-# TODO gaussian test jobs terminating with segmentation error. why?
+# TODO MRChem jobs
+
