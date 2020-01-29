@@ -388,7 +388,7 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
 
     jobfile.append("cd $SCRATCH")
     jobfile.append(f"{vars[cluster]['path_mrchem']}/mrchem -D {inputfile+extension_inputfile}")
-    jobfile.append(f"{vars[cluster]['path_mrchem']}/mrchem.x {inputfile+'_parsed.json'}.json > {inputfile+extension_outputfile}")
+    jobfile.append(f"{vars[cluster]['path_mrchem']}/mrchem.x {inputfile+'_parsed.json'} > {inputfile+extension_outputfile}")
     jobfile.append("")
 
     if cluster == "stallo":
