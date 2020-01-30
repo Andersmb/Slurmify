@@ -319,5 +319,29 @@ elif GaussianInput:
         os.chdir(args.destination)
         subprocess.call(["sbatch", args.input+JOB_EXTENSION])
 
+elif Mrcheminput:
+    job = mrchem_job(inputfile=args.input, outputfile=args.output, is_dev=args.dev, cluster=cluster,
+                     extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
+                     slurm_account=ACCOUNTS[cluster],
+                     slurm_nodes=args.nodes,
+                     slurm_ntasks_per_node=args.ntasks_per_node,
+                     slurm_cpus_per_task=args.cpus_per_task,
+                     slurm_memory=args.memory,
+                     slurm_time=args.time,
+                     slurm_mail=args.mail,
+                     initorb=args.initorb)
+
+    with open(jobname, "w") as f:
+        for line in job:
+            f.write(line + "\n")
+
+    if not args.silent:
+        print(f"Generated {jobname}")
+
+    # Now submit to queue
+    if args.execute:
+        os.chdir(args.destination)
+        subprocess.call(["sbatch", args.input+JOB_EXTENSION])
+
 
 
