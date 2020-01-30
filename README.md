@@ -14,6 +14,11 @@ Make `slurmify.py` executable by adding the Slurmify base directory to your `PAT
 ```bash
 $ bash setup.sh
 ```
+You may need to source your `~/.bashrc` in order for the changes to take effect:
+
+```bash
+$ source ~/.bashrc
+```
 
 You need to define paths to executables by opening the `utils.py` file and editing the `vars` dictionary. 
 This has to be done in order for Slurmify to work.
