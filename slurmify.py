@@ -160,6 +160,7 @@ parser.add_argument("-D", "--dev", action="store_true", help="Generate job suita
 parser.add_argument("-S", "--silent", action="store_true", help="Run in silent mode")
 parser.add_argument("-X", "--execute", action="store_true", help="Submit job to queue")
 parser.add_argument("--test", action="store_true", help="Generate ORCA, Gaussian, and MRChem input files and submit to queue")
+parser.add_argument("--deloc", action="store_true", help="Do not specify number of nodes, which 'delocalizes' the requested tasks over available nodes")
 
 # SLURM specific arguments
 parser.add_argument("-m", "--memory", metavar="<>",type=str, default="5GB", help="Total memory per node")
@@ -196,32 +197,35 @@ if not os.path.isdir(args.destination):
 # Run testing module
 if args.test:
     job_orca = orca_job(inputfile="orca_test", outputfile="orca_test", is_dev=False,
-                   cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
-                   slurm_account=ACCOUNTS[cluster],
-                   slurm_nodes="1",
-                   slurm_ntasks_per_node="1",
-                   slurm_memory="1GB",
-                   slurm_time="00-00:05:00",
-                   slurm_mail="None")
+                        cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
+                        deloc=args.deloc,
+                        slurm_account=ACCOUNTS[cluster],
+                        slurm_nodes="1",
+                        slurm_ntasks_per_node="1",
+                        slurm_memory="1GB",
+                        slurm_time="00-00:05:00",
+                        slurm_mail="None")
 
     job_gaussian = gaussian_job(inputfile="gaussian_test", outputfile="gaussian_test", is_dev=False,
-                   cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
-                   slurm_account=ACCOUNTS[cluster],
-                   slurm_nodes="1",
-                   slurm_ntasks_per_node="1",
-                   slurm_memory="1GB",
-                   slurm_time="00-00:05:00",
-                   slurm_mail="None")
+                                cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
+                                deloc=args.deloc,
+                                slurm_account=ACCOUNTS[cluster],
+                                slurm_nodes="1",
+                                slurm_ntasks_per_node="1",
+                                slurm_memory="1GB",
+                                slurm_time="00-00:05:00",
+                                slurm_mail="None")
 
     job_mrchem = mrchem_job(inputfile="mrchem_test", outputfile="mrchem_test", is_dev=False,
-                   cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
-                   slurm_account=ACCOUNTS[cluster],
-                   slurm_nodes="1",
-                   slurm_ntasks_per_node="1",
-                   slurm_cpus_per_task="1",
-                   slurm_memory="1GB",
-                   slurm_time="00-00:10:00",
-                   slurm_mail="None")
+                            cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
+                            deloc=args.deloc,
+                            slurm_account=ACCOUNTS[cluster],
+                            slurm_nodes="1",
+                            slurm_ntasks_per_node="1",
+                            slurm_cpus_per_task="1",
+                            slurm_memory="1GB",
+                            slurm_time="00-00:10:00",
+                            slurm_mail="None")
 
     # Create job files
     with open(os.path.join(args.destination, "orca_test"+JOB_EXTENSION), "w") as f:
