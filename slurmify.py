@@ -20,9 +20,6 @@ sys.path.append(ROOT)
 # Here you can set some defaults for choice of input,
 # output, and job file extensions. Also, you can define
 # your preferred default accounts to use for each cluster
-# Note that for Gaussian jobs, the '.com' extension is
-# the only one that works, and so you should *not*
-# change this
 #########################################################
 INPUT_EXTENSION = ".inp"
 OUTPUT_EXTENSION = ".out"
