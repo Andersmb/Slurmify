@@ -1,5 +1,5 @@
 # Slurmify
-Generate slurm job files for Gaussian16, ORCA, and MRChem on Stallo, Fram, and Saga.
+Generate SLURM job script files for Gaussian16, ORCA, and MRChem on Stallo, Fram, and Saga.
 
 ### Installation
 Clone this repository with
