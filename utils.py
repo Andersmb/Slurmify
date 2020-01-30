@@ -220,8 +220,11 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
     jobfile.append(f"#SBATCH --job-name={inputfile}")
     jobfile.append(f"#SBATCH --output={outputfile+'.log'}")
     jobfile.append(f"#SBATCH --error={outputfile+'.err'}")
-    if not deloc: jobfile.append(f"#SBATCH --nodes={slurm_nodes}")
-    jobfile.append(f"#SBATCH --ntasks-per-node={slurm_ntasks_per_node}")
+    if not deloc:
+        jobfile.append(f"#SBATCH --nodes={slurm_nodes}")
+        jobfile.append(f"#SBATCH --ntasks-per-node={slurm_ntasks_per_node}")
+    else:
+        jobfile.append(f"#SBATCH --ntasks={slurm_ntasks_per_node}")
     jobfile.append(f"#SBATCH --time={slurm_time}")
     if cluster != "fram": jobfile.append(f"#SBATCH --mem={slurm_memory}")
     jobfile.append(f"#SBATCH --mail-type={slurm_mail}")
@@ -395,8 +398,11 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append(f"#SBATCH --job-name={inputfile}")
     jobfile.append(f"#SBATCH --output={outputfile + '.log'}")
     jobfile.append(f"#SBATCH --error={outputfile + '.err'}")
-    if not deloc: jobfile.append(f"#SBATCH --nodes={slurm_nodes}")
-    jobfile.append(f"#SBATCH --ntasks-per-node={slurm_ntasks_per_node}")
+    if not deloc:
+        jobfile.append(f"#SBATCH --nodes={slurm_nodes}")
+        jobfile.append(f"#SBATCH --ntasks-per-node={slurm_ntasks_per_node}")
+    else:
+        jobfile.append(f"#SBATCH --ntasks={slurm_ntasks_per_node}")
     jobfile.append(f"#SBATCH --cpus-per-task={slurm_cpus_per_task}")
     jobfile.append(f"#SBATCH --time={slurm_time}")
     if cluster != "fram": jobfile.append(f"#SBATCH --mem={slurm_memory}")
