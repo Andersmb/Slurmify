@@ -204,7 +204,7 @@ if args.test:
                         slurm_ntasks_per_node="1",
                         slurm_memory="1GB",
                         slurm_time="00-00:05:00",
-                        slurm_mail="None")
+                        slurm_mail="None",)
 
     job_gaussian = gaussian_job(inputfile="gaussian_test", outputfile="gaussian_test", is_dev=False,
                                 cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
@@ -283,7 +283,8 @@ if OrcaInput:
                    chess=args.chess,
                    cxyz=args.cxyz,
                    ccomp=args.ccomp,
-                   cbgw=args.cbgw)
+                   cbgw=args.cbgw,
+                   deloc=args.deloc)
 
     with open(jobname, "w") as f:
         for line in job:
@@ -299,14 +300,15 @@ if OrcaInput:
 
 elif GaussianInput:
     job = gaussian_job(inputfile=args.input, outputfile=args.output, is_dev=args.dev,
-                   cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
-                   slurm_account=ACCOUNTS[cluster],
-                   slurm_nodes=args.nodes,
-                   slurm_ntasks_per_node=args.ntasks_per_node,
-                   slurm_memory=args.memory,
-                   slurm_time=args.time,
-                   slurm_mail=args.mail,
-                   cchk=args.cchk)
+                       cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
+                       slurm_account=ACCOUNTS[cluster],
+                       slurm_nodes=args.nodes,
+                       slurm_ntasks_per_node=args.ntasks_per_node,
+                       slurm_memory=args.memory,
+                       slurm_time=args.time,
+                       slurm_mail=args.mail,
+                       cchk=args.cchk,
+                       deloc=args.deloc)
 
     with open(jobname, "w") as f:
         for line in job:
@@ -330,7 +332,8 @@ elif Mrcheminput:
                      slurm_memory=args.memory,
                      slurm_time=args.time,
                      slurm_mail=args.mail,
-                     initorb=args.initorb)
+                     initorb=args.initorb,
+                     deloc=args.deloc)
 
     with open(jobname, "w") as f:
         for line in job:
