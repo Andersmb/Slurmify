@@ -202,6 +202,7 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
     :param cxyz: copy .xyz file to scratch
     :param ccomp: copy .cmp file to scratcg
     :param cbgw: copy .bgw file to scratcg
+    :param delov: non-exclusive, use --ntasks instead of --ntasks-per-node
     :return:
     """
 
@@ -284,6 +285,8 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
     # Copy back files
     for ext in [".hess", ".xyz", ".bgw", ".trj", ".out"]:
         jobfile.append(f"cp {inputfile + ext} $SLURM_SUBMIT_DIR")
+    if ccomp:
+        jobfile.append("*.hess $SLURM_SUBMIT_DIR")
 
     jobfile.append("")
 
