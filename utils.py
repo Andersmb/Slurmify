@@ -286,7 +286,7 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
     for ext in [".hess", ".xyz", ".bgw", ".trj", ".out"]:
         jobfile.append(f"cp {inputfile + ext} $SLURM_SUBMIT_DIR")
     if ccomp:
-        jobfile.append("*.hess $SLURM_SUBMIT_DIR")
+        jobfile.append("cp *.hess $SLURM_SUBMIT_DIR")
 
     jobfile.append("")
 
