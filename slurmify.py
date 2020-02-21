@@ -159,6 +159,7 @@ parser.add_argument("-o", "--output", metavar="<>", type=str, help="[str] Name o
 parser.add_argument("-D", "--dev", action="store_true", help="Generate job suitable for development queue")
 parser.add_argument("-S", "--silent", action="store_true", help="Run in silent mode")
 parser.add_argument("-X", "--execute", action="store_true", help="Submit job to queue")
+parser.add_argument("-I", "--identifier", type=str, metavar="<>", help="How job name is presented in the queue")
 parser.add_argument("--test", action="store_true", help="Generate ORCA, Gaussian, and MRChem input files and submit to queue")
 parser.add_argument("--deloc", action="store_true", help="Do not specify number of nodes, which 'delocalizes' the requested tasks over available nodes")
 
@@ -184,6 +185,7 @@ args = parser.parse_args()
 # Sort out some things
 if args.output is None: args.output = args.input
 if args.account is None: args.account = ACCOUNTS[cluster]
+if args.identifier is None: args.identifier = args.input
 
 # Evaluate whether the destination exists, and ask for permission to create if
 if not os.path.isdir(args.destination):
@@ -284,7 +286,8 @@ if OrcaInput:
                    cxyz=args.cxyz,
                    ccomp=args.ccomp,
                    cbgw=args.cbgw,
-                   deloc=args.deloc)
+                   deloc=args.deloc,
+                   identifier=args.identifier)
 
     with open(jobname, "w") as f:
         for line in job:
@@ -308,7 +311,8 @@ elif GaussianInput:
                        slurm_time=args.time,
                        slurm_mail=args.mail,
                        cchk=args.cchk,
-                       deloc=args.deloc)
+                       deloc=args.deloc,
+                       identifier=args.identifier)
 
     with open(jobname, "w") as f:
         for line in job:
@@ -333,7 +337,8 @@ elif Mrcheminput:
                      slurm_time=args.time,
                      slurm_mail=args.mail,
                      initorb=args.initorb,
-                     deloc=args.deloc)
+                     deloc=args.deloc,
+                     identifier=args.identifier)
 
     with open(jobname, "w") as f:
         for line in job:
