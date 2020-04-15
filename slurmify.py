@@ -171,6 +171,7 @@ parser.add_argument("-T", "--ntasks_per_node", metavar="<>",type=str, default="1
 parser.add_argument("-p", "--cpus_per_task", metavar="<>",type=str, default="0", help="SLURM variable $CPUS_PER_TASK")
 parser.add_argument("-t", "--time", type=str, metavar="<>",default="00-00:30:00", help="Specify time [dd-hh:mm:ss]")
 parser.add_argument("-M", "--mail", type=str, metavar="<>",default="NONE", help="Specify the SLURM mail type")
+parser.add_argument("-c", "--cmd", type=str, metavar="<>",default="srun", help="Specify 'mpirun' or 'srun' to submit job.")
 
 # Arguments for copying files to scratch
 parser.add_argument("--chess", action="store_true", help="Look for and copy .hess file to scratch (for ORCA jobs)")
@@ -227,7 +228,8 @@ if args.test:
                             slurm_cpus_per_task="1",
                             slurm_memory="1GB",
                             slurm_time="00-00:10:00",
-                            slurm_mail="None")
+                            slurm_mail="None",
+                            slurm_submit_cmd=args.cmd)
 
     # Create job files
     with open(os.path.join(args.destination, "orca_test"+JOB_EXTENSION), "w") as f:
@@ -336,6 +338,7 @@ elif Mrcheminput:
                      slurm_memory=args.memory,
                      slurm_time=args.time,
                      slurm_mail=args.mail,
+                     slurm_submit_cmd=args.cmd,
                      initorb=args.initorb,
                      deloc=args.deloc,
                      identifier=args.identifier)
@@ -351,6 +354,3 @@ elif Mrcheminput:
     if args.execute:
         os.chdir(args.destination)
         subprocess.call(["sbatch", args.input+JOB_EXTENSION])
-
-
-
