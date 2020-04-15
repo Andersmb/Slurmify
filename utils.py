@@ -40,9 +40,9 @@ vars = {
         "gaussian_version": "Gaussian/g16_B.01",
         "path_orca": f"/cluster/home/ambr/software/orca_4_2_1_linux_x86-64_openmpi314/orca",
         "path_mpi": "/cluster/software/OpenMPI/3.1.4-GCC-8.3.0/bin",
-        "path_mrchem": "/cluster/home/ambr/mrchem022/build/bin",
+        "path_mrchem": "/cluster/home/ambr/mrchem_master200412/build/bin",
         "modules_mrchem": ["intel/2018b", "Python/3.6.6-intel-2018b"],
-        "mrchem_venv": "/cluster/home/ambr/.local/share/virtualenvs/mrchem022-RcvyK6hG/bin/activate",
+        "mrchem_venv": "/cluster/home/ambr/.local/share/virtualenvs/mrchem_master200412-LD0TdiUP/bin/activate",
         "orbdir": "/cluster/work/users/ambr/MWorbitals_${SLURM_JOBID}"
     }
 }
