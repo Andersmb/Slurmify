@@ -387,9 +387,10 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
 def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, slurm_nodes=None,
                cluster=None, slurm_ntasks_per_node=None, slurm_cpus_per_task=None, slurm_memory=None, slurm_time=None,
                slurm_mail=None, extension_outputfile=None, extension_inputfile=None, initorb=None, deloc=None,
-               identifier=None):
+               identifier=None, slurm_submit_cmd="srun"):
 
     assert slurm_memory.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
+    assert slurm_submit_cmd in ["mpirun", "srun"], "Invalid parallelization command used to submit MRChem job"
 
     timestamp = f"# File generated {datetime.datetime.now()}"
 
@@ -439,7 +440,7 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
 
     jobfile.append("cd $SCRATCH")
     jobfile.append(f"{vars[cluster]['path_mrchem']}/mrchem -D {inputfile+extension_inputfile}")
-    jobfile.append(f"mpirun {vars[cluster]['path_mrchem']}/mrchem.x {inputfile+'.json'} > {inputfile+extension_outputfile}")
+    jobfile.append(f"{slurm_submit_cmd} {vars[cluster]['path_mrchem']}/mrchem.x {inputfile+'.json'} > {inputfile+extension_outputfile}")
     jobfile.append("")
 
     if cluster == "stallo":
