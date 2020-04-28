@@ -172,6 +172,7 @@ parser.add_argument("-p", "--cpus_per_task", metavar="<>",type=str, default="0",
 parser.add_argument("-t", "--time", type=str, metavar="<>",default="00-00:30:00", help="Specify time [dd-hh:mm:ss]")
 parser.add_argument("-M", "--mail", type=str, metavar="<>",default="NONE", help="Specify the SLURM mail type")
 parser.add_argument("-c", "--cmd", type=str, metavar="<>",default="srun", help="Specify 'mpirun' or 'srun' to submit job.")
+parser.add_argument("-P", "--partition", type=str, metavar="<>",default="normal", help="Specify the queueing partition.")
 
 # Arguments for copying files to scratch
 parser.add_argument("--chess", action="store_true", help="Look for and copy .hess file to scratch (for ORCA jobs)")
@@ -284,6 +285,7 @@ if OrcaInput:
                    slurm_memory=args.memory,
                    slurm_time=args.time,
                    slurm_mail=args.mail,
+                   slurm_partition=args.partition,
                    chess=args.chess,
                    cxyz=args.cxyz,
                    ccomp=args.ccomp,
@@ -312,6 +314,7 @@ elif GaussianInput:
                        slurm_memory=args.memory,
                        slurm_time=args.time,
                        slurm_mail=args.mail,
+                       slurm_partition=args.partition,
                        cchk=args.cchk,
                        deloc=args.deloc,
                        identifier=args.identifier)
@@ -339,6 +342,7 @@ elif Mrcheminput:
                      slurm_time=args.time,
                      slurm_mail=args.mail,
                      slurm_submit_cmd=args.cmd,
+                     slurm_partition=args.partition,
                      initorb=args.initorb,
                      deloc=args.deloc,
                      identifier=args.identifier)
