@@ -230,7 +230,10 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
     jobfile.append(f"#SBATCH --time={slurm_time}")
     if cluster != "fram": jobfile.append(f"#SBATCH --mem={slurm_memory}")
     jobfile.append(f"#SBATCH --mail-type={slurm_mail}")
-    if is_dev: jobfile.append("#SBATCH --qos=devel")
+    if is_dev: 
+        jobfile.append("#SBATCH --qos=devel")
+    else:
+        jobfile.append(f"#SBATCH --partition={slurm_partition}")
     jobfile.append("")
     jobfile.append("module purge")
     jobfile.append(f"module load {vars[cluster]['mpi_version']}")
@@ -327,8 +330,10 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
     jobfile.append(f"#SBATCH --time={slurm_time}")
     if cluster != "fram": jobfile.append(f"#SBATCH --mem={slurm_memory}")
     jobfile.append(f"#SBATCH --mail-type={slurm_mail}")
-    if is_dev: jobfile.append("#SBATCH --qos=devel")
-
+    if is_dev: 
+        jobfile.append("#SBATCH --qos=devel")
+    else:
+        jobfile.append(f"#SBATCH --partition={slurm_partition}")
     jobfile.append("")
     jobfile.append("module purge")
     jobfile.append(f"module load {vars[cluster]['gaussian_version']}")
@@ -414,7 +419,10 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append(f"#SBATCH --time={slurm_time}")
     if cluster != "fram": jobfile.append(f"#SBATCH --mem={slurm_memory}")
     jobfile.append(f"#SBATCH --mail-type={slurm_mail}")
-    if is_dev: jobfile.append("#SBATCH --qos=devel")
+    if is_dev: 
+        jobfile.append("#SBATCH --qos=devel")
+    else:
+        jobfile.append(f"#SBATCH --partition={slurm_partition}")
     jobfile.append("")
     jobfile.append("module purge")
     for module in vars[cluster]["modules_mrchem"]:
