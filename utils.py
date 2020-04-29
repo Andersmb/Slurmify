@@ -283,7 +283,7 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
     # Execute ORCA
     jobfile.append("")
     jobfile.append("cd $SCRATCH")
-    jobfile.append(f"time $ORCA {inputfile+extension_inputfile} > {outputfile+extension_outputfile}")
+    jobfile.append(f"time $ORCA/orca {inputfile+extension_inputfile} > {outputfile+extension_outputfile}")
     jobfile.append("")
 
     # Copy back files
