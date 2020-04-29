@@ -18,7 +18,7 @@ vars = {
         "mpi_version": "OpenMPI/3.1.3-GCC-8.2.0-2.31.1",
         "gaussian_version": "Gaussian/g16_B.01",
         "scratch": f"/global/work/ambr/${{SLURM_JOBID}}",
-        "path_orca": f"/home/ambr/software/orca_4_2_1_linux_x86-64_openmpi314/orca",
+        "path_orca": f"/home/ambr/software/orca_4_2_1_linux_x86-64_openmpi314",
         "path_mpi": "/global/hds/software/cpu/eb3/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/bin",
         "path_mrchem": "/home/ambr/mrchem_master200303/build/bin",
         "mrchem_venv": "/home/ambr/.local/share/virtualenvs/mrchem_master200303-X6sXxlx6/bin/activate",
@@ -28,7 +28,7 @@ vars = {
     "fram": {
         "mpi_version": "OpenMPI/3.1.3-GCC-8.2.0-2.31.1",
         "gaussian_version": "Gaussian/g16_B.01",
-        "path_orca": f"/cluster/home/ambr/software/orca_4_1_1_linux_x86-64_openmpi313/orca",
+        "path_orca": f"/cluster/home/ambr/software/orca_4_1_1_linux_x86-64_openmpi313",
         "path_mpi": "/cluster/software/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/bin",
         "path_mrchem": "/cluster/home/ambr/mrchem022/build/bin",
         "modules_mrchem": ["intel/2017a", "Python/3.6.1-intel-2017a"],
@@ -38,7 +38,7 @@ vars = {
     "saga": {
         "mpi_version": "OpenMPI/3.1.4-GCC-8.3.0",
         "gaussian_version": "Gaussian/g16_B.01",
-        "path_orca": f"/cluster/home/ambr/software/orca_4_2_1_linux_x86-64_openmpi314/orca",
+        "path_orca": f"/cluster/home/ambr/software/orca_4_2_1_linux_x86-64_openmpi314",
         "path_mpi": "/cluster/software/OpenMPI/3.1.4-GCC-8.3.0/bin",
         "path_mrchem": "/cluster/home/ambr/mrchem_master200412/build/bin",
         "modules_mrchem": ["intel/2018b", "Python/3.6.6-intel-2018b"],
