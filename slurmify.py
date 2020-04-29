@@ -208,7 +208,8 @@ if args.test:
                         slurm_ntasks_per_node="1",
                         slurm_memory="1GB",
                         slurm_time="00-00:05:00",
-                        slurm_mail="None",)
+                        slurm_mail="None",,
+                        slurm_partition="normal")
 
     job_gaussian = gaussian_job(inputfile="gaussian_test", outputfile="gaussian_test", is_dev=False,
                                 cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
@@ -218,7 +219,8 @@ if args.test:
                                 slurm_ntasks_per_node="1",
                                 slurm_memory="1GB",
                                 slurm_time="00-00:05:00",
-                                slurm_mail="None")
+                                slurm_mail="None",
+                                slurm_partition="normal")
 
     job_mrchem = mrchem_job(inputfile="mrchem_test", outputfile="mrchem_test", is_dev=False,
                             cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
@@ -230,6 +232,7 @@ if args.test:
                             slurm_memory="1GB",
                             slurm_time="00-00:10:00",
                             slurm_mail="None",
+                            slurm_partition="normal",
                             slurm_submit_cmd=args.cmd)
 
     # Create job files
