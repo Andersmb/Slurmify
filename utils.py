@@ -440,7 +440,7 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append(f"cp {os.path.join(inputfile+extension_inputfile)} $SCRATCH")
 
     if initorb is not None:
-        jobfile.append(f"cp -r {initorb} $SCRATCH/orbitals")
+        jobfile.append(f"cp -r {initorb} $SCRATCH/initial_guess")
 
     jobfile.append("")
     jobfile.append(f"source {vars[cluster]['mrchem_venv']}")
