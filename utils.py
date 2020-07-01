@@ -20,20 +20,12 @@ vars = {
         "scratch": f"/global/work/ambr/${{SLURM_JOBID}}",
         "path_orca": f"/home/ambr/software/orca_4_2_1_linux_x86-64_openmpi314",
         "path_mpi": "/global/hds/software/cpu/eb3/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/lib",
-        "path_mrchem": "/home/ambr/mrchem_master200303/build/bin",
-        "mrchem_venv": "/home/ambr/.local/share/virtualenvs/mrchem_master200303-X6sXxlx6/bin/activate",
-        "modules_mrchem": ["intel/2018b", "Python/3.7.0-intel-2018b"],
-        "orbdir": "/global/work/ambr/MWorbitals_${SLURM_JOBID}"
     },
     "fram": {
         "mpi_version": "OpenMPI/3.1.3-GCC-8.2.0-2.31.1",
         "gaussian_version": "Gaussian/g16_B.01",
         "path_orca": f"/cluster/home/ambr/software/orca_4_1_1_linux_x86-64_openmpi313",
         "path_mpi": "/cluster/software/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/lib",
-        "path_mrchem": "/cluster/home/ambr/mrchem022/build/bin",
-        "modules_mrchem": ["intel/2017a", "Python/3.6.1-intel-2017a"],
-        "mrchem_venv": "/cluster/home/ambr/.local/share/virtualenvs/mrchem022-RcvyK6hG/bin/activate",
-        "orbdir": "/cluster/work/users/ambr/MWorbitals_${SLURM_JOBID}"
     },
     "saga": {
         "mpi_version": "OpenMPI/3.1.4-GCC-8.3.0",
@@ -386,6 +378,7 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
 
     assert slurm_memory.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
     assert slurm_submit_cmd in ["mpirun", "srun"], "Invalid parallelization command used to submit MRChem job"
+    assert cluster == "saga", "!! Please update MRChem to v1.0.0 !!"
 
     timestamp = f"# File generated {datetime.datetime.now()}"
 
