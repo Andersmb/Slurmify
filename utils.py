@@ -426,7 +426,7 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append("")
 
     jobfile.append("cd $SCRATCH")
-    jobfile.append(f"{vars[cluster]['mrchem_path']} --launcher=\"srun -np {slurm_ntasks_per_node}\" {inputfile}")
+    jobfile.append(f"{vars[cluster]['mrchem_path']} --launcher=\"srun -n {slurm_ntasks_per_node}\" {inputfile}")
     jobfile.append("")
 
     if cluster == "stallo":
