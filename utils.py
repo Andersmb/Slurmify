@@ -40,9 +40,9 @@ vars = {
         "gaussian_version": "Gaussian/g16_B.01",
         "path_orca": f"/cluster/home/ambr/software/orca_4_2_1_linux_x86-64_openmpi314",
         "path_mpi": "/cluster/software/OpenMPI/3.1.4-GCC-8.3.0/bin",
-        "path_mrchem": "/cluster/home/ambr/mrchem_master200412/build/bin",
-        "modules_mrchem": ["intel/2018b", "Python/3.6.6-intel-2018b"],
-        "mrchem_venv": "/cluster/home/ambr/.local/share/virtualenvs/mrchem_master200412-LD0TdiUP/bin/activate",
+        "mrchem_path": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/install-1.0.0-alpha2/bin/mrchem",
+        "mrchem_environ": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/tools/saga.env",
+        "mrchem_venv": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/foo/bin/activate",
         "orbdir": "/cluster/work/users/ambr/MWorbitals_${SLURM_JOBID}"
     }
 }
@@ -69,12 +69,6 @@ def make_test_inputs(destination=".", extension=".inp"):
     """
     with open(os.path.join(destination, "mrchem_test"+extension), "w") as f:
         f.write("world_prec = 1.0e-4\n")
-        f.write("world_size = 4\n")
-        f.write("\n")
-        f.write("Basis {\n")
-        f.write("order = 8\n")
-        f.write("type = interpolating\n")
-        f.write("}\n")
         f.write("\n")
         f.write("Molecule {\n")
         f.write("charge = 0\n")
@@ -89,10 +83,6 @@ def make_test_inputs(destination=".", extension=".inp"):
         f.write("WaveFunction {\n")
         f.write("method = pbe\n")
         f.write("restricted = false\n")
-        f.write("}\n")
-        f.write("\n")
-        f.write("Properties {\n")
-        f.write("scf_energy = true\n")
         f.write("}\n")
         f.write("\n")
         f.write("SCF {\n")
@@ -424,11 +414,7 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     else:
         jobfile.append(f"#SBATCH --partition={slurm_partition}")
     jobfile.append("")
-    jobfile.append("module purge")
-    for module in vars[cluster]["modules_mrchem"]:
-        jobfile.append(f"module load {module}")
-    jobfile.append("")
-
+    jobfile.append(f"source {vars[cluster]['mrchem_environ']}")
     jobfile.append(f"export OMP_NUM_THREADS={slurm_cpus_per_task}")
     jobfile.append("")
 
@@ -447,8 +433,7 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append("")
 
     jobfile.append("cd $SCRATCH")
-    jobfile.append(f"{vars[cluster]['path_mrchem']}/mrchem -D {inputfile+extension_inputfile}")
-    jobfile.append(f"{slurm_submit_cmd} {vars[cluster]['path_mrchem']}/mrchem.x {inputfile+'.json'} > {inputfile+extension_outputfile}")
+    jobfile.append(f"{vars[cluster]['mrchem_path']} --launcher=\"srun -np {slurm_ntasks_per_node}\" {inputfile}")
     jobfile.append("")
 
     if cluster == "stallo":
