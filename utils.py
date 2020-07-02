@@ -61,11 +61,11 @@ def make_test_inputs(destination=".", extension=".inp"):
     """
     with open(os.path.join(destination, "mrchem_test"+extension), "w") as f:
         f.write("world_prec = 1.0e-4\n")
+        f.write("world_unit = angstrom\n")
         f.write("\n")
         f.write("Molecule {\n")
         f.write("charge = 0\n")
         f.write("multiplicity = 2\n")
-        f.write("angstrom = true\n")
         f.write("translate = true\n")
         f.write("$coords\n")
         f.write("H 0.0 0.0 0.0\n")
@@ -425,7 +425,7 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append("")
 
     jobfile.append("cd $SCRATCH")
-    jobfile.append(f"{vars[cluster]['mrchem_path']} --launcher=\"srun -n {slurm_ntasks_per_node}\" {inputfile}")
+    jobfile.append(f"{vars[cluster]['mrchem_path']} --launcher=\"{slurm_submit_cmd} -{'n' if slurm_submit_cmd == 'srun' else 'np'} {slurm_ntasks_per_node}\" {inputfile}")
     jobfile.append("")
 
     if cluster == "stallo":
