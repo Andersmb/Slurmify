@@ -256,10 +256,10 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
     jobfile.append(f"MPI={vars[cluster]['path_mpi']}")
     jobfile.append("")
 
-    jobfile.append("export PATH=$ORCA:$PATH")
-    jobfile.append(f"export PATH={'$MPI'}:$PATH")
-    jobfile.append("export LD_LIBRARY_PATH=$ORCA:$LD_LIBRARY_PATH")
-    jobfile.append(f"export LD_LIBRARY_PATH={'$MPI'}:$LD_LIBRARY_PATH")
+    jobfile.append("export PATH=$PATH:$ORCA")
+    jobfile.append(f"export PATH=$PATH:{'$MPI'}")
+    jobfile.append("export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORCA")
+    jobfile.append(f"export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{'$MPI'}")
     jobfile.append("export RSH_COMMAND=\"/usr/bin/ssh -x\"")
 
     # Execute ORCA
