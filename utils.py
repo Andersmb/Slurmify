@@ -430,8 +430,10 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
 
     if cluster == "stallo":
         jobfile.append(f"cp {inputfile+extension_outputfile} ${{SLURM_SUBMIT_DIR}}/")
+        jobfile.append(f"cp {inputfile}.json ${{SLURM_SUBMIT_DIR}}/")
     else:
         jobfile.append(f"savefile {inputfile+extension_outputfile}")
+        jobfile.append(f"savefile {inputfile}.json")
 
     jobfile.append(f"mkdir -p {vars[cluster]['orbdir']}")
     jobfile.append(f"cp orbitals/* {vars[cluster]['orbdir']}/")
