@@ -26,6 +26,10 @@ vars = {
         "gaussian_version": "Gaussian/g16_B.01",
         "path_orca": f"/cluster/home/ambr/software/orca_4_1_1_linux_x86-64_openmpi313",
         "path_mpi": "/cluster/software/OpenMPI/3.1.3-GCC-8.2.0-2.31.1/lib",
+        "mrchem_path": "/cluster/home/ambr/mrchem_v1/install-1.0.0-alpha2/bin/mrchem",
+        "mrchem_environ": "/cluster/home/ambr/mrchem_v1/tools/fram.env",
+        "mrchem_venv": "/cluster/home/ambr/.local/share/virtualenvs/mrchem_v1-qK46GSpE/bin/activate",
+        "orbdir": "/cluster/work/users/ambr/MW_orbitals/${SLURM_JOBID}"
     },
     "saga": {
         "mpi_version": "OpenMPI/3.1.4-GCC-8.3.0",
