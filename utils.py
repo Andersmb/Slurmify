@@ -382,7 +382,7 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
 
     assert slurm_memory.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
     assert slurm_submit_cmd in ["mpirun", "srun"], "Invalid parallelization command used to submit MRChem job"
-    assert cluster == "saga", "!! Please update MRChem to v1.0.0 !!"
+    assert cluster in ["saga", "fram"], "!! Please update MRChem to v1.0.0 !!"
 
     timestamp = f"# File generated {datetime.datetime.now()}"
 
