@@ -83,7 +83,7 @@ def make_test_inputs(destination=".", extension=".inp"):
         f.write("\n")
         f.write("SCF {\n")
         f.write("kain = 4\n")
-        f.write("initial_guess = sad_dz\n")
+        f.write("guess_type = sad_dz\n")
         f.write("}\n")
 
     with open(os.path.join(destination, "gaussian_test"+extension), "w") as f:
