@@ -35,7 +35,7 @@ vars = {
         "mpi_version": "OpenMPI/3.1.4-GCC-8.3.0",
         "gaussian_version": "Gaussian/g16_B.01",
         "path_orca": f"/cluster/home/ambr/software/orca_4_2_1_linux_x86-64_shared_openmpi314",
-        "path_mpi": "/cluster/software/OpenMPI/3.1.4-GCC-8.3.0/bin",
+        "path_mpi": "/cluster/software/OpenMPI/3.1.4-GCC-8.3.0/lib",
         "mrchem_path": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/install-1.0.0-alpha2/bin/mrchem",
         "mrchem_environ": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/tools/saga.env",
         "mrchem_venv": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/foo/bin/activate",
