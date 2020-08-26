@@ -224,6 +224,9 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
     jobfile.append("module purge")
     jobfile.append(f"module load {vars[cluster]['mpi_version']}")
     jobfile.append("")
+    jobfile.append("set -o errexit")
+    jobfile.append("set -o nounset")
+    jobfile.append("")
 
     if cluster == "stallo":
         jobfile.append(f"SCRATCH={vars[cluster]['scratch']}")
@@ -324,6 +327,9 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
     jobfile.append("module purge")
     jobfile.append(f"module load {vars[cluster]['gaussian_version']}")
     jobfile.append("")
+    jobfile.append("set -o errexit")
+    jobfile.append("set -o nounset")
+    jobfile.append("")
 
     if cluster == "saga":
         jobfile.append("export GAUSS_LFLAGS2='--LindaOptions -s 20000000'")
@@ -414,6 +420,9 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append(f"source {vars[cluster]['mrchem_environ']}")
     jobfile.append(f"source {vars[cluster]['mrchem_venv']}")
     jobfile.append(f"export OMP_NUM_THREADS={slurm_cpus_per_task}")
+    jobfile.append("")
+    jobfile.append("set -o errexit")
+    jobfile.append("set -o nounset")
     jobfile.append("")
 
     if cluster == "stallo":
