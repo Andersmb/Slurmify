@@ -39,8 +39,18 @@ vars = {
         "mrchem_path": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/install-1.0.0-alpha2/bin/mrchem",
         "mrchem_environ": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/tools/saga.env",
         "mrchem_venv": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/foo/bin/activate",
-        "orbdir": "/cluster/work/users/ambr/MWorbitals_${SLURM_JOBID}"
+        "orbdir": "/cluster/work/users/ambr/MWorbitals_${SLURM_JOBID}",
     }
+}
+
+billing = {
+    "saga": {
+        "bigmem": {"factor_mem": 0.1059915, "factor_cpu": 1.0},
+        "normal": {"factor_mem": 0.2145918, "factor_cpu": 1.0},
+        "max": 256
+    },
+    "fram": {"max": 100000000},
+    "stallo": {"max": 100000000}
 }
 #########################################################
 
@@ -53,6 +63,30 @@ def header(hdr):
     {"="*len(title)}
     """
     return my_header
+
+
+def maxbilling_okay(cluster=None, ncpus_per_task=None, ntasks=None, mem=None, mem_per_cpu=None, partition=None):
+    """
+
+    :param cluster:
+    :param ncpus:
+    :param mem:
+    :param mem_per_cpu:
+    :param partition:
+    :return:
+    """
+    assert not all([mem is None for mem in [mem, mem_per_cpu]]), "These arguments are mutually exclusive!"
+    assert not all([mem is not None for mem in [mem, mem_per_cpu]]), "You must specify one of these arguments!"
+
+    if mem:
+        bill = billing[cluster][partition]["factor_mem"] * float(mem[:-2]) + float(ntasks)*float(ncpus_per_task)
+    elif mem_per_cpu:
+        bill = billing[cluster][partition]["factor_mem"] * float(ncpus_per_task) * float(ntasks) * float(mem_per_cpu[:-2]) + float(ntasks) * float(ncpus_per_task)
+
+    if bill > billing[cluster]["max"]:
+        return False, bill
+    else:
+        return True, bill
 
 
 def make_test_inputs(destination=".", extension=".inp"):

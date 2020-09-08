@@ -8,7 +8,7 @@ import subprocess
 import json
 from socket import gethostname
 
-from utils import orca_job, gaussian_job, mrchem_job, vars, input_origin, make_test_inputs, header
+from utils import orca_job, gaussian_job, mrchem_job, vars, input_origin, make_test_inputs, header, maxbilling_okay, billing
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(ROOT)
@@ -360,6 +360,15 @@ elif Mrcheminput:
                      initorb=args.initorb,
                      deloc=args.deloc,
                      identifier=args.identifier)
+
+    # Check that the job does not exceed maximum billing
+    result, bill = maxbilling_okay(cluster=cluster,
+                           ntasks=args.ntasks,
+                           ncpus_per_task=args.cpus_per_task,
+                           mem=args.memory,
+                           mem_per_cpu=args.memory_per_cpu,
+                           partition=args.partition)
+    assert result, f"Your job ({bill}) exceeds the maximum number of billing units allowed on {cluster} ({billing[cluster]['max']})."
 
     with open(jobname, "w") as f:
         for line in job:
