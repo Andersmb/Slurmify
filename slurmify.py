@@ -30,6 +30,7 @@ ACCOUNTS = dict(fram="nn4654k",
 #########################################################
 
 AFFIRMATIVE = ["yes", "y", ""]
+CLUSTERS = ["saga", "fram", "stallo"]
 
 # Determine cluster
 if "stallo" in gethostname():
@@ -167,7 +168,8 @@ parser.add_argument("--test", action="store_true", help="Generate ORCA, Gaussian
 parser.add_argument("--deloc", action="store_true", help="Do not specify number of nodes, which 'delocalizes' the requested tasks over available nodes")
 
 # SLURM specific arguments
-parser.add_argument("-m", "--memory", metavar="<>",type=str, default="5GB", help="Total memory per node")
+parser.add_argument("-m", "--memory", metavar="<>",type=str, help="Total memory for calculation")
+parser.add_argument("-mpc", "--memory_per_cpu", metavar="<>",type=str, help="Memory per CPU")
 parser.add_argument("-a", "--account", metavar="<>",type=str, help="Use this account on cluster")
 parser.add_argument("-n", "--nodes", metavar="<>",type=str, default="1", help="Specify number of nodes")
 parser.add_argument("-T", "--ntasks", metavar="<>",type=str, default="10", help="SLURM variable $NTASKS(-PER-NODE)")
@@ -176,6 +178,7 @@ parser.add_argument("-t", "--time", type=str, metavar="<>",default="00-00:30:00"
 parser.add_argument("-M", "--mail", type=str, metavar="<>",default="NONE", help="Specify the SLURM mail type")
 parser.add_argument("-c", "--cmd", type=str, metavar="<>",default="srun", help="Specify 'mpirun' or 'srun' to submit job.")
 parser.add_argument("-P", "--partition", type=str, metavar="<>",default="normal", help="Specify the queueing partition.")
+parser.add_argument("-C", "--cluster", type=str, metavar="<>",choices=CLUSTERS, help="Select custom cluster for the job")
 
 # Arguments for copying files to scratch
 parser.add_argument("--chess", action="store_true", help="Look for and copy .hess file to scratch (for ORCA jobs)")
@@ -186,6 +189,10 @@ parser.add_argument("--cchk", action="store_true", help="Copy .chk file to scrat
 parser.add_argument("--initorb", metavar="<>", type=str, help="Path to directory storing orbitals to be copied (for MRChem jobs)")
 
 args = parser.parse_args()
+
+# Now overwrite the automatically determined cluster, if specified
+if args.cluster is not None:
+    cluster = args.cluster
 
 # Sort out some things
 if args.output is None: args.output = args.input
@@ -345,6 +352,7 @@ elif Mrcheminput:
                      slurm_ntasks_per_node=args.ntasks,
                      slurm_cpus_per_task=args.cpus_per_task,
                      slurm_memory=args.memory,
+                     slurm_mem_per_cpu=args.memory_per_cpu,
                      slurm_time=args.time,
                      slurm_mail=args.mail,
                      slurm_submit_cmd=args.cmd,

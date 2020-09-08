@@ -382,11 +382,16 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
 
 
 def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, slurm_nodes=None, slurm_partition=None,
-               cluster=None, slurm_ntasks_per_node=None, slurm_cpus_per_task=None, slurm_memory=None, slurm_time=None,
+               cluster=None, slurm_ntasks_per_node=None, slurm_cpus_per_task=None, slurm_memory=None,
+               slurm_mem_per_cpu=None, slurm_time=None,
                slurm_mail=None, extension_outputfile=None, extension_inputfile=None, initorb=None, deloc=None,
                identifier=None, slurm_submit_cmd="srun"):
 
-    assert slurm_memory.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
+    assert not all([mem is None for mem in [slurm_memory, slurm_mem_per_cpu]]), "You must specify the memory!"
+    if slurm_mem_per_cpu is not None:
+        assert slurm_mem_per_cpu.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
+    if slurm_memory is not None:
+        assert slurm_memory.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
     assert slurm_submit_cmd in ["mpirun", "srun"], "Invalid parallelization command used to submit MRChem job"
     assert cluster in ["saga", "fram"], "!! Please update MRChem to v1.0.0 !!"
 
@@ -410,7 +415,11 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
         jobfile.append(f"#SBATCH --ntasks={slurm_ntasks_per_node}")
     jobfile.append(f"#SBATCH --cpus-per-task={slurm_cpus_per_task}")
     jobfile.append(f"#SBATCH --time={slurm_time}")
-    if cluster != "fram": jobfile.append(f"#SBATCH --mem={slurm_memory}")
+    if cluster != "fram":
+        if slurm_memory is None:
+            jobfile.append(f"#SBATCH --mem-per-cpu={slurm_mem_per_cpu}")
+        else:
+            jobfile.append(f"#SBATCH --mem={slurm_memory}")
     jobfile.append(f"#SBATCH --mail-type={slurm_mail}")
     if is_dev: 
         jobfile.append("#SBATCH --qos=devel")
