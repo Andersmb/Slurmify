@@ -30,6 +30,7 @@ vars = {
         "mrchem_environ": "/cluster/home/ambr/mrchem_v1/tools/fram.env",
         "mrchem_venv": "/cluster/home/ambr/.local/share/virtualenvs/mrchem_v1-qK46GSpE/bin/activate",
         "orbdir": "/cluster/work/users/ambr/MW_orbitals/${SLURM_JOBID}"
+        "checkdir": "/cluster/work/users/ambr/MW_checkpoints/${SLURM_JOBID}"
     },
     "saga": {
         "mpi_version": "OpenMPI/3.1.4-GCC-8.3.0",
@@ -40,6 +41,7 @@ vars = {
         "mrchem_environ": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/tools/saga.env",
         "mrchem_venv": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/foo/bin/activate",
         "orbdir": "/cluster/work/users/ambr/MWorbitals_${SLURM_JOBID}",
+        "checkdir": "/cluster/work/users/ambr/MWcheckpoints_${SLURM_JOBID}",
     }
 }
 
@@ -494,6 +496,10 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append(f"mkdir -p {vars[cluster]['orbdir']}")
     jobfile.append(f"cp orbitals/* {vars[cluster]['orbdir']}/")
     jobfile.append(f"echo {vars[cluster]['orbdir']} > ${{SLURM_SUBMIT_DIR}}/{inputfile}.orbitals")
+
+    jobfile.append(f"mkdir -p {vars[cluster]['checkdir']}")
+    jobfile.append(f"cp checkpoint/* {vars[cluster]['orbdir']}/")
+    jobfile.append(f"echo {vars[cluster]['checkdir']} > ${{SLURM_SUBMIT_DIR}}/{inputfile}.checkpoint")
 
     jobfile.append("")
     jobfile.append("exit 0")
