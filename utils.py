@@ -29,7 +29,7 @@ vars = {
         "mrchem_path": "/cluster/home/ambr/mrchem_v1/install-1.0.0-alpha2/bin/mrchem",
         "mrchem_environ": "/cluster/home/ambr/mrchem_v1/tools/fram.env",
         "mrchem_venv": "/cluster/home/ambr/.local/share/virtualenvs/mrchem_v1-qK46GSpE/bin/activate",
-        "orbdir": "/cluster/work/users/ambr/MW_orbitals/${SLURM_JOBID}"
+        "orbdir": "/cluster/work/users/ambr/MW_orbitals/${SLURM_JOBID}",
         "checkdir": "/cluster/work/users/ambr/MW_checkpoints/${SLURM_JOBID}"
     },
     "saga": {
@@ -41,7 +41,7 @@ vars = {
         "mrchem_environ": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/tools/saga.env",
         "mrchem_venv": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/foo/bin/activate",
         "orbdir": "/cluster/work/users/ambr/MWorbitals_${SLURM_JOBID}",
-        "checkdir": "/cluster/work/users/ambr/MWcheckpoints_${SLURM_JOBID}",
+        "checkdir": "/cluster/work/users/ambr/MWcheckpoints_${SLURM_JOBID}"
     }
 }
 
