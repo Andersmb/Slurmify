@@ -493,12 +493,16 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
         jobfile.append(f"savefile {inputfile+extension_outputfile}")
         jobfile.append(f"savefile {inputfile}.json")
 
+    jobfile.append("")
+
     jobfile.append(f"mkdir -p {vars[cluster]['orbdir']}")
     jobfile.append(f"cp orbitals/* {vars[cluster]['orbdir']}/")
     jobfile.append(f"echo {vars[cluster]['orbdir']} > ${{SLURM_SUBMIT_DIR}}/{inputfile}.orbitals")
+    
+    jobfile.append("")
 
     jobfile.append(f"mkdir -p {vars[cluster]['checkdir']}")
-    jobfile.append(f"cp checkpoint/* {vars[cluster]['orbdir']}/")
+    jobfile.append(f"cp checkpoint/* {vars[cluster]['checkdir']}/")
     jobfile.append(f"echo {vars[cluster]['checkdir']} > ${{SLURM_SUBMIT_DIR}}/{inputfile}.checkpoint")
 
     jobfile.append("")
