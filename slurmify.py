@@ -166,6 +166,7 @@ parser.add_argument("-X", "--execute", action="store_true", help="Submit job to 
 parser.add_argument("-I", "--identifier", type=str, metavar="<>", help="How job name is presented in the queue")
 parser.add_argument("--test", action="store_true", help="Generate ORCA, Gaussian, and MRChem input files and submit to queue")
 parser.add_argument("--deloc", action="store_true", help="Do not specify number of nodes, which 'delocalizes' the requested tasks over available nodes")
+parser.add_argument("--checkbill", action="store_true", help="Check whether the job's billing exceeds the maximum allowed for the partition")
 
 # SLURM specific arguments
 parser.add_argument("-m", "--memory", metavar="<>",type=str, help="Total memory for calculation")
@@ -362,13 +363,14 @@ elif Mrcheminput:
                      identifier=args.identifier)
 
     # Check that the job does not exceed maximum billing
-    result, bill = maxbilling_okay(cluster=cluster,
-                           ntasks=args.ntasks,
-                           ncpus_per_task=args.cpus_per_task,
-                           mem=args.memory,
-                           mem_per_cpu=args.memory_per_cpu,
-                           partition=args.partition)
-    assert result, f"Your job ({bill}) exceeds the maximum number of billing units allowed on {cluster} ({billing[cluster]['max']})."
+    if args.checkbill:
+        result, bill = maxbilling_okay(cluster=cluster,
+                               ntasks=args.ntasks,
+                               ncpus_per_task=args.cpus_per_task,
+                               mem=args.memory,
+                               mem_per_cpu=args.memory_per_cpu,
+                               partition=args.partition)
+        assert result, f"Your job ({bill}) exceeds the maximum number of billing units allowed on {cluster} ({billing[cluster]['max']})."
 
     with open(jobname, "w") as f:
         for line in job:
