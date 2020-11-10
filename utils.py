@@ -40,8 +40,8 @@ vars = {
         "mrchem_path": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/install-1.0.0-alpha2/bin/mrchem",
         "mrchem_environ": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/tools/saga.env",
         "mrchem_venv": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/foo/bin/activate",
-        "orbdir": "/cluster/work/users/ambr/MWorbitals_${SLURM_JOBID}",
-        "checkdir": "/cluster/work/users/ambr/MWcheckpoints_${SLURM_JOBID}"
+        "orbdir": "/cluster/projects/nn4654k/ambr/MWorbitals_${SLURM_JOBID}",
+        "checkdir": "/cluster/projects/nn4654k/ambr/MWcheckpoints_${SLURM_JOBID}"
     }
 }
 
