@@ -162,10 +162,11 @@ parser.add_argument("-i", "--input", metavar="<>", type=str, help="[str] Name of
 parser.add_argument("-o", "--output", metavar="<>", type=str, help="[str] Name of output file")
 parser.add_argument("-D", "--dev", action="store_true", help="Generate job suitable for development queue")
 parser.add_argument("-S", "--silent", action="store_true", help="Run in silent mode")
+parser.add_argument("-f", "--force", action="store_true", help="Overwrite job files without asking for permission")
 parser.add_argument("-X", "--execute", action="store_true", help="Submit job to queue")
 parser.add_argument("-I", "--identifier", type=str, metavar="<>", help="How job name is presented in the queue")
 parser.add_argument("--test", action="store_true", help="Generate ORCA, Gaussian, and MRChem input files and submit to queue")
-parser.add_argument("--deloc", action="store_true", help="Do not specify number of nodes, which 'delocalizes' the requested tasks over available nodes")
+parser.add_argument("--loc", action="store_true", help="Specify number of nodes, which 'localizes' the requested tasks over specific nodes")
 parser.add_argument("--checkbill", action="store_true", help="Check whether the job's billing exceeds the maximum allowed for the partition")
 
 # SLURM specific arguments
@@ -174,7 +175,7 @@ parser.add_argument("-mpc", "--memory_per_cpu", metavar="<>",type=str, help="Mem
 parser.add_argument("-a", "--account", metavar="<>",type=str, help="Use this account on cluster")
 parser.add_argument("-n", "--nodes", metavar="<>",type=str, default="1", help="Specify number of nodes")
 parser.add_argument("-T", "--ntasks", metavar="<>",type=str, default="10", help="SLURM variable $NTASKS(-PER-NODE)")
-parser.add_argument("-p", "--cpus_per_task", metavar="<>",type=str, default="0", help="SLURM variable $CPUS_PER_TASK")
+parser.add_argument("-p", "--cpus_per_task", metavar="<>",type=str, default="10", help="SLURM variable $CPUS_PER_TASK")
 parser.add_argument("-t", "--time", type=str, metavar="<>",default="00-00:30:00", help="Specify time [dd-hh:mm:ss]")
 parser.add_argument("-M", "--mail", type=str, metavar="<>",default="NONE", help="Specify the SLURM mail type")
 parser.add_argument("-c", "--cmd", type=str, metavar="<>",default="srun", help="Specify 'mpirun' or 'srun' to submit job.")
@@ -188,6 +189,7 @@ parser.add_argument("--ccomp", action="store_true", help="Look for and copy .cmp
 parser.add_argument("--cbgw", action="store_true", help="Look for and copy .bgw file to scratch (for ORCA jobs)")
 parser.add_argument("--cchk", action="store_true", help="Copy .chk file to scratch (for Gaussian jobs)")
 parser.add_argument("--initorb", metavar="<>", type=str, help="Path to directory storing orbitals to be copied (for MRChem jobs)")
+parser.add_argument("--initchk", metavar="<>", type=str, help="Path to directory storing checkpoint orbitals to be copied (for MRChem jobs)")
 
 args = parser.parse_args()
 
@@ -202,18 +204,18 @@ if args.identifier is None: args.identifier = args.input
 
 # Evaluate whether the destination exists, and ask for permission to create if
 if not os.path.isdir(args.destination):
-    answer = input(f"The directory \"{args.destination}\" does not exist. Do you want to create it? (Y/n) ")
-    if answer not in AFFIRMATIVE:
-        sys.exit("Aborting")
-    else:
-        os.mkdir(args.destination)
-        print(f"Created \"{args.destination}\"")
+        answer = input(f"The directory \"{args.destination}\" does not exist. Do you want to create it? (Y/n) ")
+        if answer not in AFFIRMATIVE:
+            sys.exit("Aborting")
+        else:
+            os.mkdir(args.destination)
+            print(f"Created \"{args.destination}\"")
 
 # Run testing module
 if args.test:
     job_orca = orca_job(inputfile="orca_test", outputfile="orca_test", is_dev=False,
                         cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
-                        deloc=args.deloc,
+                        loc=args.loc,
                         slurm_account=ACCOUNTS[cluster],
                         slurm_nodes="1",
                         slurm_ntasks_per_node="1",
@@ -224,7 +226,7 @@ if args.test:
 
     job_gaussian = gaussian_job(inputfile="gaussian_test", outputfile="gaussian_test", is_dev=False,
                                 cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
-                                deloc=args.deloc,
+                                loc=args.loc,
                                 slurm_account=ACCOUNTS[cluster],
                                 slurm_nodes="1",
                                 slurm_ntasks_per_node="1",
@@ -235,7 +237,7 @@ if args.test:
 
     job_mrchem = mrchem_job(inputfile="mrchem_test", outputfile="mrchem_test", is_dev=False,
                             cluster=cluster, extension_inputfile=INPUT_EXTENSION, extension_outputfile=OUTPUT_EXTENSION,
-                            deloc=args.deloc,
+                            loc=args.loc,
                             slurm_account=ACCOUNTS[cluster],
                             slurm_nodes="1",
                             slurm_ntasks_per_node="1",
@@ -284,10 +286,11 @@ if not args.silent:
         print("MRChem input file detected.")
 
 # Make sure not to silently overwrite existing files
-if os.path.isfile(jobname):
-    answer = input("The .job file exists. Do you want to overwrite it? (Y/n) ").lower()
-    if answer not in AFFIRMATIVE:
-        sys.exit("Aborted")
+if not args.force:
+    if os.path.isfile(jobname):
+        answer = input("The .job file exists. Do you want to overwrite it? (Y/n) ").lower()
+        if answer not in AFFIRMATIVE:
+            sys.exit("Aborted")
 
 # Generate job files
 if OrcaInput:
@@ -304,7 +307,7 @@ if OrcaInput:
                    cxyz=args.cxyz,
                    ccomp=args.ccomp,
                    cbgw=args.cbgw,
-                   deloc=args.deloc,
+                   loc=args.loc,
                    identifier=args.identifier)
 
     with open(jobname, "w") as f:
@@ -330,7 +333,7 @@ elif GaussianInput:
                        slurm_mail=args.mail,
                        slurm_partition=args.partition,
                        cchk=args.cchk,
-                       deloc=args.deloc,
+                       loc=args.loc,
                        identifier=args.identifier)
 
     with open(jobname, "w") as f:
@@ -359,7 +362,8 @@ elif Mrcheminput:
                      slurm_submit_cmd=args.cmd,
                      slurm_partition=args.partition,
                      initorb=args.initorb,
-                     deloc=args.deloc,
+                     initchk=args.initchk,
+                     loc=args.loc,
                      identifier=args.identifier)
 
     # Check that the job does not exceed maximum billing

@@ -205,7 +205,7 @@ def get_orca_bgwfile(inputfile):
 def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, slurm_nodes=None,
              cluster=None, slurm_ntasks_per_node=None, slurm_memory=None, slurm_time=None, slurm_partition=None,
              slurm_mail=None, extension_outputfile=None, extension_inputfile=None, chess=False, cxyz=False, ccomp=False,
-             cbgw=False, deloc=None, identifier=None):
+             cbgw=False, loc=None, identifier=None):
     """
 
     :param inputfile: name of input file without extension
@@ -224,7 +224,7 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
     :param cxyz: copy .xyz file to scratch
     :param ccomp: copy .cmp file to scratcg
     :param cbgw: copy .bgw file to scratcg
-    :param deloc: non-exclusive, use --ntasks instead of --ntasks-per-node
+    :param loc: non-exclusive, use --ntasks instead of --ntasks-per-node
     :param identifier: how job name is presented in the queue. Does not affect name of input file
     :return:
     """
@@ -244,7 +244,7 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
     jobfile.append(f"#SBATCH --job-name={identifier}")
     jobfile.append(f"#SBATCH --output={outputfile+'.log'}")
     jobfile.append(f"#SBATCH --error={outputfile+'.err'}")
-    if not deloc:
+    if loc:
         jobfile.append(f"#SBATCH --nodes={slurm_nodes}")
         jobfile.append(f"#SBATCH --ntasks-per-node={slurm_ntasks_per_node}")
     else:
@@ -332,7 +332,7 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
 
 def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, slurm_nodes=None,
                  cluster=None, slurm_ntasks_per_node=None, slurm_memory=None, slurm_time=None, slurm_partition=None,
-                 slurm_mail=None, extension_outputfile=None, extension_inputfile=None, cchk=False, deloc=None,
+                 slurm_mail=None, extension_outputfile=None, extension_inputfile=None, cchk=False, loc=None,
                  identifier=None):
 
     assert slurm_memory.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
@@ -350,10 +350,14 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
     jobfile.append(f"#SBATCH --job-name={identifier}")
     jobfile.append(f"#SBATCH --output={outputfile+'.log'}")
     jobfile.append(f"#SBATCH --error={outputfile+'.err'}")
-    if not deloc: jobfile.append(f"#SBATCH --nodes={slurm_nodes}")
-    jobfile.append(f"#SBATCH --ntasks-per-node={slurm_ntasks_per_node}")
+    if loc:
+        jobfile.append(f"#SBATCH --nodes={slurm_nodes}")
+        jobfile.append(f"#SBATCH --ntasks-per-node={slurm_ntasks_per_node}")
+    else:
+        jobfile.append(f'#SBATCH --ntasks={slurm_ntasks_per_node}')
     jobfile.append(f"#SBATCH --time={slurm_time}")
-    if cluster != "fram": jobfile.append(f"#SBATCH --mem={slurm_memory}")
+    if cluster != "fram":
+        jobfile.append(f"#SBATCH --mem={slurm_memory}")
     jobfile.append(f"#SBATCH --mail-type={slurm_mail}")
     if is_dev: 
         jobfile.append("#SBATCH --qos=devel")
@@ -420,7 +424,7 @@ def gaussian_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=Non
 def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, slurm_nodes=None, slurm_partition=None,
                cluster=None, slurm_ntasks_per_node=None, slurm_cpus_per_task=None, slurm_memory=None,
                slurm_mem_per_cpu=None, slurm_time=None,
-               slurm_mail=None, extension_outputfile=None, extension_inputfile=None, initorb=None, deloc=None,
+               slurm_mail=None, extension_outputfile=None, extension_inputfile=None, initorb=None, initchk=None, loc=None,
                identifier=None, slurm_submit_cmd="srun"):
 
     assert not all([mem is None for mem in [slurm_memory, slurm_mem_per_cpu]]), "You must specify the memory!"
@@ -444,7 +448,7 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append(f"#SBATCH --job-name={identifier}")
     jobfile.append(f"#SBATCH --output={outputfile + '.log'}")
     jobfile.append(f"#SBATCH --error={outputfile + '.err'}")
-    if not deloc:
+    if loc:
         jobfile.append(f"#SBATCH --nodes={slurm_nodes}")
         jobfile.append(f"#SBATCH --ntasks-per-node={slurm_ntasks_per_node}")
     else:
@@ -479,6 +483,8 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
 
     if initorb is not None:
         jobfile.append(f"cp -r {initorb} $SCRATCH/initial_guess")
+    elif initchk is not None:
+        jobfile.append(f"cp -r {initchk} $SCRATCH/checkpoint")
 
     jobfile.append("")
 
