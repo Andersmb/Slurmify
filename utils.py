@@ -205,7 +205,7 @@ def get_orca_bgwfile(inputfile):
 def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, slurm_nodes=None,
              cluster=None, slurm_ntasks_per_node=None, slurm_memory=None, slurm_time=None, slurm_partition=None,
              slurm_mail=None, extension_outputfile=None, extension_inputfile=None, chess=False, cxyz=False, ccomp=False,
-             cbgw=False, loc=None, identifier=None):
+             cgbw=None, loc=None, identifier=None):
     """
 
     :param inputfile: name of input file without extension
@@ -222,8 +222,8 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
     :param extension_inputfile: extension used for input file
     :param chess: copy .hess file to scratch
     :param cxyz: copy .xyz file to scratch
-    :param ccomp: copy .cmp file to scratcg
-    :param cbgw: copy .bgw file to scratcg
+    :param ccomp: copy .cmp file to scratch
+    :param cgbw: copy .bgw file to scratch
     :param loc: non-exclusive, use --ntasks instead of --ntasks-per-node
     :param identifier: how job name is presented in the queue. Does not affect name of input file
     :return:
@@ -287,9 +287,9 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
         if not os.path.isfile(compfile):
             sys.exit("Error! The .cmp file specified does not exist.")
         jobfile.append(f"cp {compfile} $SCRATCH")
-    if cbgw:
-        bgwfile = get_orca_bgwfile(inputfile+extension_inputfile)
-        if not os.path.isfile(bgwfile):
+    if cgbw:
+        gbwfile = get_orca_gbwfile(cgbw)
+        if not os.path.isfile(gbwfile):
             sys.exit("Error! The .bgw file specified does not exist.")
         jobfile.append(f"cp {bgwfile} $SCRATCH")
 
@@ -312,7 +312,7 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
     jobfile.append("")
 
     # Copy back files
-    for ext in [".hess", ".xyz", ".bgw", ".trj", ".out"]:
+    for ext in [".hess", ".xyz", ".gbw", ".trj", ".out"]:
         jobfile.append(f"cp {inputfile + ext} $SLURM_SUBMIT_DIR || true")
     if ccomp:
         jobfile.append("cp *.hess $SLURM_SUBMIT_DIR || true")
