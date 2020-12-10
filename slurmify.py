@@ -186,7 +186,7 @@ parser.add_argument("-C", "--cluster", type=str, metavar="<>",choices=CLUSTERS, 
 parser.add_argument("--chess", action="store_true", help="Look for and copy .hess file to scratch (for ORCA jobs)")
 parser.add_argument("--cxyz", action="store_true", help="Look for and copy .xyz file to scratch (for ORCA jobs)")
 parser.add_argument("--ccomp", action="store_true", help="Look for and copy .cmp file to scratch (for ORCA jobs)")
-parser.add_argument("--cbgw", action="store_true", help="Look for and copy .bgw file to scratch (for ORCA jobs)")
+parser.add_argument("--cgbw", action="store_true", help="Look for and copy .gbw file to scratch (for ORCA jobs)")
 parser.add_argument("--cchk", action="store_true", help="Copy .chk file to scratch (for Gaussian jobs)")
 parser.add_argument("--initorb", metavar="<>", type=str, help="Path to directory storing orbitals to be copied (for MRChem jobs)")
 parser.add_argument("--initchk", metavar="<>", type=str, help="Path to directory storing checkpoint orbitals to be copied (for MRChem jobs)")
@@ -306,7 +306,7 @@ if OrcaInput:
                    chess=args.chess,
                    cxyz=args.cxyz,
                    ccomp=args.ccomp,
-                   cbgw=args.cbgw,
+                   cgbw=args.cgbw,
                    loc=args.loc,
                    identifier=args.identifier)
 
