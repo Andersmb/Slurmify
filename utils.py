@@ -190,7 +190,7 @@ def get_orca_compfile(inputfile):
         sys.exit(f"Error! The input file ({inputfile}) was not found")
 
 
-def get_orca_bgwfile(inputfile):
+def get_orca_gbwfile(inputfile):
     try:
         content = open(inputfile).readlines()
         for line in content:
