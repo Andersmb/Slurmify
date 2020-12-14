@@ -192,7 +192,8 @@ def get_orca_compfile(inputfile):
 
 def get_orca_gbwfile(inputfile):
     try:
-        content = open(inputfile).readlines()
+        with open(inputfile) as f:
+            content = f.readlines()
         for line in content:
             if "".join(line.lower().split()).startswith("%moinp"):
                 return line.split()[-1][1:-1]
