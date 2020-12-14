@@ -292,7 +292,7 @@ def orca_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None, s
         gbwfile = get_orca_gbwfile(cgbw)
         if not os.path.isfile(gbwfile):
             sys.exit("Error! The .bgw file specified does not exist.")
-        jobfile.append(f"cp {bgwfile} $SCRATCH")
+        jobfile.append(f"cp {gbwfile} $SCRATCH")
 
     # Export variables
     jobfile.append("")
