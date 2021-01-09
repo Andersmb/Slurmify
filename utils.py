@@ -471,7 +471,6 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
         jobfile.append(f"#SBATCH --partition={slurm_partition}")
     jobfile.append("")
     jobfile.append(f"source {vars[cluster]['mrchem_environ']}")
-    jobfile.append(f"source {vars[cluster]['mrchem_venv']}")
     jobfile.append(f"export OMP_NUM_THREADS={slurm_cpus_per_task}")
     jobfile.append("")
     jobfile.append("set -o errexit")
