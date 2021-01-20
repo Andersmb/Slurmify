@@ -23,7 +23,7 @@ vars = {
     },
     "fram": {
         "mpi_version": "OpenMPI/3.1.3-GCC-8.2.0-2.31.1",
-        "gaussian_version": "Gaussian/g16_B.01",
+        "gaussian_version": "Gaussian/g16_C.01",
         "path_orca": f"/cluster/home/ambr/software/orca_4_2_1_linux_x86-64_shared_openmpi314",
         "path_mpi": "/cluster/software/OpenMPI/3.1.4-GCC-8.3.0/lib/",
         "mrchem_path": "/cluster/home/ambr/mrchem_v1/install-1.0.0-alpha2/bin/mrchem",
