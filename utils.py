@@ -37,14 +37,17 @@ vars = {
         "gaussian_version": "Gaussian/g16_B.01",
         "path_orca": f"/cluster/home/ambr/software/orca_4_2_1_linux_x86-64_shared_openmpi314",
         "path_mpi": "/cluster/software/OpenMPI/3.1.4-GCC-8.3.0/lib",
-        # "mrchem_path": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/install-1.0.0-alpha2/bin/mrchem",
-        # "mrchem_environ": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/tools/saga.env",
-        # "mrchem_venv": "/cluster/home/ambr/mrchem_v1.0.0-alpha2/foo/bin/activate",
         "mrchem_path": "/cluster/home/ambr/mrchem_master_20210108/install-1.1.0-alpha/bin/mrchem",
         "mrchem_environ": "/cluster/home/ambr/mrchem_master_20210108/tools/saga.env",
         "mrchem_venv": "/cluster/home/ambr/.local/share/virtualenvs/mrchem_master_20210108-v1b016BV/bin/activate",
         "orbdir": "/cluster/projects/nn4654k/ambr/MWorbitals_${SLURM_JOBID}",
         "checkdir": "/cluster/projects/nn4654k/ambr/MWcheckpoints_${SLURM_JOBID}"
+    },
+    "betzy": {
+        "mrchem_path": "/cluster/home/ambr/MRChem/install-1.0.1/bin/mrchem",
+        "mrchem_environ": "/cluster/home/ambr/MRChem/tools/betzy.env",
+        "orbdir": "/cluster/projects/${{SLURM_JOB_ACCOUNT}}/ambr/orbitals/${SLURM_JOBID}",
+        "checkdir": "/cluster/projects/${{SLURM_JOB_ACCOUNT}}/ambr/checkpoints/${SLURM_JOBID}"
     }
 }
 
@@ -436,8 +439,8 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
         assert slurm_mem_per_cpu.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
     if slurm_memory is not None:
         assert slurm_memory.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
-    assert slurm_submit_cmd in ["mpirun", "srun"], "Invalid parallelization command used to submit MRChem job"
-    assert cluster in ["saga", "fram"], "!! Please update MRChem to v1.0.0 !!"
+    assert any([slurm_submit_cmd.startswith(cmd) for cmd in ['mpirun', 'srun']]), "Invalid parallelization command used to submit MRChem job"
+    assert cluster in ["saga", "fram", "betzy"], "!! Please update MRChem!!"
 
     timestamp = f"# File generated {datetime.datetime.now()}"
 
@@ -492,7 +495,7 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append("")
 
     jobfile.append("cd $SCRATCH")
-    jobfile.append(f"{vars[cluster]['mrchem_path']} --launcher=\"{slurm_submit_cmd} -{'n' if slurm_submit_cmd == 'srun' else 'np'} {slurm_ntasks_per_node}\" {inputfile}")
+    jobfile.append(f"{vars[cluster]['mrchem_path']} --launcher='{slurm_submit_cmd} -{'n' if slurm_submit_cmd == 'srun' else 'np'} {slurm_ntasks_per_node}' {inputfile}")
     jobfile.append("")
 
     if cluster == "stallo":
