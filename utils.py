@@ -438,7 +438,6 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
         assert slurm_mem_per_cpu.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
     if slurm_memory is not None:
         assert slurm_memory.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
-    assert any([slurm_submit_cmd.startswith(cmd) for cmd in ['mpirun', 'srun']]), "Invalid parallelization command used to submit MRChem job"
     assert cluster in ["saga", "fram", "betzy"], "!! Please update MRChem!!"
 
     timestamp = f"# File generated {datetime.datetime.now()}"
@@ -497,7 +496,7 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append("cd $SCRATCH")
     if cluster == 'betzy':
         jobfile.append(
-            f"{vars[cluster]['mrchem_path']} --launcher='{slurm_submit_cmd}' {inputfile}")
+            f"{vars[cluster]['mrchem_path']} --launcher='{slurm_submit_cmd if slurm_submit_cmd is not None else 'mpirun -map-by ppr:1:numa -bind-to numa'}' {inputfile}")
     else:
         jobfile.append(f"{vars[cluster]['mrchem_path']} --launcher='{slurm_submit_cmd} -{'n' if slurm_submit_cmd == 'srun' else 'np'} {slurm_ntasks_per_node}' {inputfile}")
     jobfile.append("")

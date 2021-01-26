@@ -182,7 +182,7 @@ parser.add_argument("-T", "--ntasks", metavar="<>",type=str, default="10", help=
 parser.add_argument("-p", "--cpus_per_task", metavar="<>",type=str, default="10", help="SLURM variable $CPUS_PER_TASK")
 parser.add_argument("-t", "--time", type=str, metavar="<>",default="00-00:30:00", help="Specify time [dd-hh:mm:ss]")
 parser.add_argument("-M", "--mail", type=str, metavar="<>",default="NONE", help="Specify the SLURM mail type")
-parser.add_argument("-c", "--cmd", type=str, metavar="<>",default="srun", help="Specify 'mpirun' or 'srun' to submit job.")
+parser.add_argument("-c", "--cmd", type=str, metavar="<>",help="Specify 'mpirun' or 'srun' to submit job.")
 parser.add_argument("-P", "--partition", type=str, metavar="<>",default="normal", help="Specify the queueing partition.")
 parser.add_argument("-C", "--cluster", type=str, metavar="<>",choices=CLUSTERS, help="Select custom cluster for the job")
 
