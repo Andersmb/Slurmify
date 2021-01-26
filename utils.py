@@ -46,8 +46,8 @@ vars = {
     "betzy": {
         "mrchem_path": "/cluster/home/ambr/MRChem/install-1.0.1/bin/mrchem",
         "mrchem_environ": "/cluster/home/ambr/MRChem/tools/betzy.env",
-        "orbdir": "/cluster/projects/${{SLURM_JOB_ACCOUNT}}/ambr/orbitals/${SLURM_JOBID}",
-        "checkdir": "/cluster/projects/${{SLURM_JOB_ACCOUNT}}/ambr/checkpoints/${SLURM_JOBID}"
+        "orbdir": "/cluster/projects/${SLURM_JOB_ACCOUNT}/ambr/orbitals/${SLURM_JOBID}",
+        "checkdir": "/cluster/projects/${SLURM_JOB_ACCOUNT}/ambr/checkpoints/${SLURM_JOBID}"
     }
 }
 
