@@ -434,7 +434,6 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
                slurm_mail=None, extension_outputfile=None, extension_inputfile=None, initorb=None, initchk=None, loc=None,
                identifier=None, slurm_submit_cmd="srun"):
 
-    assert not all([mem is None for mem in [slurm_memory, slurm_mem_per_cpu]]), "You must specify the memory!"
     if slurm_mem_per_cpu is not None:
         assert slurm_mem_per_cpu.endswith("B"), "You must specify units of memory allocation (number must end with 'B')"
     if slurm_memory is not None:
@@ -462,11 +461,12 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
         jobfile.append(f"#SBATCH --ntasks={slurm_ntasks_per_node}")
     jobfile.append(f"#SBATCH --cpus-per-task={slurm_cpus_per_task}")
     jobfile.append(f"#SBATCH --time={slurm_time}")
-    if cluster != "fram":
-        if slurm_memory is None:
-            jobfile.append(f"#SBATCH --mem-per-cpu={slurm_mem_per_cpu}")
-        else:
-            jobfile.append(f"#SBATCH --mem={slurm_memory}")
+
+    if slurm_mem_per_cpu is not None:
+        jobfile.append(f"#SBATCH --mem-per-cpu={slurm_mem_per_cpu}")
+    if slurm_memory is not None:
+        jobfile.append(f"#SBATCH --mem={slurm_memory}")
+
     jobfile.append(f"#SBATCH --mail-type={slurm_mail}")
     if is_dev: 
         jobfile.append("#SBATCH --qos=devel")
@@ -495,7 +495,11 @@ def mrchem_job(inputfile=None, outputfile=None, is_dev=None, slurm_account=None,
     jobfile.append("")
 
     jobfile.append("cd $SCRATCH")
-    jobfile.append(f"{vars[cluster]['mrchem_path']} --launcher='{slurm_submit_cmd} -{'n' if slurm_submit_cmd == 'srun' else 'np'} {slurm_ntasks_per_node}' {inputfile}")
+    if cluster == 'betzy':
+        jobfile.append(
+            f"{vars[cluster]['mrchem_path']} --launcher='{slurm_submit_cmd}' {inputfile}")
+    else:
+        jobfile.append(f"{vars[cluster]['mrchem_path']} --launcher='{slurm_submit_cmd} -{'n' if slurm_submit_cmd == 'srun' else 'np'} {slurm_ntasks_per_node}' {inputfile}")
     jobfile.append("")
 
     if cluster == "stallo":
